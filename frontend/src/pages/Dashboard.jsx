@@ -1,270 +1,189 @@
 import {
-  Activity,
-  AlertTriangle,
   ArrowRight,
-  BrainCircuit,
-  Factory,
+  Plus,
+  Sun,
+  Wind,
   Leaf,
-  Zap,
+  Sparkles,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
-  const stats = [
-    {
-      label: "Total Assets",
-      value: "0",
-      description: "No assets connected yet",
-      icon: Activity,
-      iconBg: "bg-[#E8F5EC]",
-      iconColor: "text-[#238542]",
-    },
-    {
-      label: "Healthy Assets",
-      value: "0",
-      description: "Waiting for sensor data",
-      icon: Leaf,
-      iconBg: "bg-[#E8F5EC]",
-      iconColor: "text-[#238542]",
-    },
-    {
-      label: "Needs Attention",
-      value: "0",
-      description: "No issues detected",
-      icon: AlertTriangle,
-      iconBg: "bg-[#FFF4DF]",
-      iconColor: "text-[#D68B23]",
-    },
-    {
-      label: "Critical Assets",
-      value: "0",
-      description: "No critical assets",
-      icon: Zap,
-      iconBg: "bg-[#FBE9E7]",
-      iconColor: "text-[#C94B3F]",
-    },
-  ];
+  const navigate = useNavigate();
 
   return (
-    <div className="space-y-6">
+    <div className="relative min-h-screen overflow-hidden bg-[#FAFBF7]">
 
-      {/* Farm Header */}
-      <section className="relative overflow-hidden rounded-[28px] bg-[#285B3B]">
-        <img
-          src="/images/solar-farm.jpg"
-          alt="Solar and wind renewable energy farm"
-          className="absolute inset-0 h-full w-full object-cover opacity-35"
-        />
+      {/* =========================================================
+          BACKGROUND DECORATION
+      ========================================================= */}
 
-        <div className="absolute inset-0 bg-linear-to-r from-[#285B3B] via-[#285B3B]/85 to-transparent" />
+      <div className="pointer-events-none absolute -right-30 -top-35 h-107.5 w-107.5 rounded-full border-70 border-[#E3F1E6]/70" />
 
-        <div className="relative z-10 flex min-h-70 flex-col justify-between gap-8 p-7 md:p-9">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
-              <Factory size={19} />
-            </div>
+      <div className="pointer-events-none absolute -bottom-55 left-47.5 h-120 w-120 rounded-full border-70 border-[#E3F1E6]/70" />
 
-            <div>
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-white/60">
-                Farm Overview
-              </p>
-              <p className="mt-0.5 text-sm font-medium text-white">
-                Renewable Energy Operations
-              </p>
-            </div>
-          </div>
+      <div className="pointer-events-none absolute -right-5 top-25 h-65 w-65 rounded-full bg-[#E3F1E6]/25 blur-3xl" />
 
-          <div className="max-w-2xl">
-            <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-              Your renewable assets,
-              <br />
-              monitored intelligently.
-            </h1>
+      {/* =========================================================
+          HERO
+      ========================================================= */}
 
-            <p className="mt-4 max-w-xl text-sm leading-6 text-white/70 md:text-base">
-              Connect your farm data to detect abnormal behaviour, understand
-              asset health and prioritize maintenance before problems grow.
-            </p>
+      <section className="relative min-h-screen">
 
-            <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#285B3B] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F7F5F0]">
-              <BrainCircuit size={17} />
-              Analyze Farm with AI
-              <ArrowRight size={15} />
-            </button>
-          </div>
+        {/* Image */}
+        <div className="absolute inset-0">
+
+          <img
+            src="/images/solar-farm.jpg"
+            alt="Solar panels and wind turbines"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+
+          {/* Main fade */}
+          <div className="absolute inset-0 bg-linear-to-r from-[#FAFBF7] via-[#FAFBF7]/90 via-42% to-[#FAFBF7]/5" />
+
+          {/* Bottom fade */}
+          <div className="absolute inset-x-0 bottom-0 h-[35%] bg-linear-to-t from-[#FAFBF7] to-transparent" />
+
+          {/* Soft overall wash */}
+          <div className="absolute inset-0 bg-[#E3F1F6]/10" />
         </div>
-      </section>
 
-      {/* Statistics */}
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
+        {/* =====================================================
+            HERO CONTENT
+        ===================================================== */}
 
-          return (
-            <div
-              key={stat.label}
-              className="rounded-2xl border border-[#E4E9E1] bg-white p-5 shadow-[0_4px_20px_rgba(32,39,34,0.035)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(32,39,34,0.07)]"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-[#738078]">
-                    {stat.label}
-                  </p>
+        <div className="relative z-10 flex min-h-screen items-center">
 
-                  <p className="mt-2 text-3xl font-bold tracking-tight text-[#202722]">
-                    {stat.value}
-                  </p>
+          <div className="w-full px-8 pb-20 pt-32 sm:px-12 lg:px-21 xl:px-21">
 
-                  <p className="mt-1 text-xs text-[#89968E]">
-                    {stat.description}
-                  </p>
+            <div className="max-w-142.5">
+
+              {/* Eyebrow */}
+              <div className="mb-6 flex items-center gap-2">
+
+                <span className="h-px w-8 bg-[#001e61]" />
+
+                <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
+                  Clean Energy. Smarter Tomorrow.
+                </p>
+
+              </div>
+
+              {/* Heading */}
+              <h1 className="text-[58px] font-semibold leading-[0.98] tracking-[-0.055em] text-[#202722] sm:text-[66px] xl:text-[72px]">
+                Welcome to
+                <br />
+                <span className="text-[#001e61]">
+                  RenewAI
+                </span>
+              </h1>
+
+              {/* Description */}
+              <p className="mt-7 max-w-120 text-[15px] leading-7 text-[#5F7169]">
+                Your renewable energy operations platform. Monitor your
+                farms, manage assets, and keep everything running with
+                the power of AI.
+              </p>
+
+              {/* CTA */}
+              <button
+                onClick={() => navigate("/farms")}
+                className="group mt-8 inline-flex items-center gap-4 rounded-full bg-[#001e61] px-5 py-3.5 text-[13px] font-semibold text-white shadow-[0_10px_30px_rgba(35,133,66,0.20)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[ #001e61]"
+              >
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
+                  <Plus
+                    size={15}
+                    strokeWidth={2}
+                  />
+                </span>
+
+                Create Farm
+
+                <ArrowRight
+                  size={17}
+                  strokeWidth={1.8}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
+              </button>
+
+              {/* Feature tags */}
+              <div className="mt-24 flex items-center gap-5">
+
+                {/* Solar */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F5B83D]/15">
+                    <Sun
+                      size={17}
+                      strokeWidth={1.7}
+                      className="text-[#D68B23]"
+                    />
+                  </div>
+
+                  <span className="text-[12px] font-medium text-[#40544C]">
+                    Solar
+                  </span>
                 </div>
 
-                <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.iconBg}`}
-                >
-                  <Icon size={18} className={stat.iconColor} />
+                <div className="h-5 w-px bg-[#738078]/25" />
+
+                {/* Wind */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E3F1F6]">
+                    <Wind
+                      size={17}
+                      strokeWidth={1.7}
+                      className="text-[#2387AE]"
+                    />
+                  </div>
+
+                  <span className="text-[12px] font-medium text-[#40544C]">
+                    Wind
+                  </span>
                 </div>
+
+                <div className="h-5 w-px bg-[#738078]/25" />
+
+                {/* Sustainable */}
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8EDF7]">
+                    <Leaf
+                      size={17}
+                      strokeWidth={1.7}
+                      className="text-[#001e61]"
+                    />
+                  </div>
+
+                  <span className="text-[12px] font-medium text-[#40544C]">
+                    Sustainable
+                  </span>
+                </div>
+
               </div>
-            </div>
-          );
-        })}
-      </section>
 
-      {/* Farm Health + AI Analysis */}
-      <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-
-        {/* Farm Health */}
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#738078]">
-                Farm Health
-              </p>
-
-              <h2 className="mt-1 text-xl font-bold text-[#202722]">
-                Waiting for farm data
-              </h2>
-            </div>
-
-            <div className="rounded-full bg-[#F1F4ED] px-3 py-1.5 text-xs font-semibold text-[#738078]">
-              Not analyzed
-            </div>
-          </div>
-
-          <div className="mt-8 flex items-center gap-6">
-            <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-10 border-[#F1F4ED]">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#202722]">—</p>
-                <p className="text-[10px] text-[#89968E]">/ 100</p>
-              </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-semibold text-[#202722]">
-                No health score yet
-              </p>
-
-              <p className="mt-2 text-sm leading-6 text-[#738078]">
-                Connect asset or sensor data to generate an AI-powered farm
-                health assessment.
-              </p>
             </div>
           </div>
         </div>
 
-        {/* AI Analysis */}
-        <div className="rounded-3xl border border-[#E4E9E1] bg-[#F7F5F0] p-6">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#285B3B] shadow-sm">
-            <BrainCircuit size={20} />
-          </div>
+        {/* =====================================================
+            SMALL AI BADGE
+        ===================================================== */}
 
-          <p className="mt-5 text-sm font-medium text-[#738078]">
-            AI Analysis
-          </p>
+        <div className="absolute bottom-10 right-8 z-20 hidden rounded-full border border-white/50 bg-white/50 px-4 py-2.5 backdrop-blur-xl md:flex md:items-center md:gap-2.5">
 
-          <h2 className="mt-1 text-xl font-bold text-[#202722]">
-            Ready when your data is.
-          </h2>
+          <Sparkles
+            size={15}
+            className="text-[#001e61]"
+          />
 
-          <p className="mt-3 text-sm leading-6 text-[#738078]">
-            Once sensor data is available, AI analysis can identify unusual
-            patterns and highlight assets that may need attention.
-          </p>
+          <span className="text-[11px] font-medium text-[#40544C]">
+            AI-assisted renewable intelligence
+          </span>
 
-          <button
-            disabled
-            className="mt-5 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-[#E4E9E1] px-4 py-3 text-sm font-semibold text-[#89968E]"
-          >
-            <BrainCircuit size={16} />
-            Analysis unavailable
-          </button>
-        </div>
-      </section>
-
-      {/* Maintenance + Activity */}
-      <section className="grid gap-6 lg:grid-cols-2">
-
-        {/* Maintenance */}
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#738078]">
-                Maintenance Priority
-              </p>
-
-              <h2 className="mt-1 text-xl font-bold text-[#202722]">
-                Nothing requires attention
-              </h2>
-            </div>
-
-            <div className="rounded-xl bg-[#E8F5EC] p-2.5 text-[#238542]">
-              <Activity size={18} />
-            </div>
-          </div>
-
-          <div className="mt-6 rounded-2xl border border-dashed border-[#D9E0D8] bg-[#FAFBF7] p-6 text-center">
-            <p className="text-sm font-semibold text-[#202722]">
-              No maintenance priorities yet
-            </p>
-
-            <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#89968E]">
-              Maintenance priorities will appear here after assets are
-              connected and analyzed.
-            </p>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-[#738078]">
-                Recent Activity
-              </p>
-
-              <h2 className="mt-1 text-xl font-bold text-[#202722]">
-                Farm activity
-              </h2>
-            </div>
-
-            <div className="rounded-xl bg-[#E3F1F6] p-2.5 text-[#2387AE]">
-              <Activity size={18} />
-            </div>
-          </div>
-
-          <div className="mt-6 rounded-2xl border border-dashed border-[#D9E0D8] bg-[#FAFBF7] p-6 text-center">
-            <p className="text-sm font-semibold text-[#202722]">
-              No activity yet
-            </p>
-
-            <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#89968E]">
-              Asset alerts, analyses and maintenance updates will appear here
-              once your farm is connected.
-            </p>
-          </div>
         </div>
 
       </section>
+
     </div>
   );
 }
