@@ -1,0 +1,1 @@
+print("Sensor simulator started successfully!")
