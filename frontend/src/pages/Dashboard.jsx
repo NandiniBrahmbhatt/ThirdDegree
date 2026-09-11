@@ -55,9 +55,9 @@ function Dashboard() {
           className="absolute inset-0 h-full w-full object-cover opacity-35"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-[#285B3B] via-[#285B3B]/85 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-[#285B3B] via-[#285B3B]/85 to-transparent" />
 
-        <div className="relative z-10 flex min-h-[280px] flex-col justify-between gap-8 p-7 md:p-9">
+        <div className="relative z-10 flex min-h-70 flex-col justify-between gap-8 p-7 md:p-9">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
               <Factory size={19} />
@@ -152,7 +152,7 @@ function Dashboard() {
           </div>
 
           <div className="mt-8 flex items-center gap-6">
-            <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-[10px] border-[#F1F4ED]">
+            <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-10 border-[#F1F4ED]">
               <div className="text-center">
                 <p className="text-2xl font-bold text-[#202722]">—</p>
                 <p className="text-[10px] text-[#89968E]">/ 100</p>
