@@ -6,3 +6,7 @@ python-dotenv>=1.0,<2.0
 python-jose[cryptography]>=3.3,<4.0
 passlib[bcrypt]>=1.7,<2.0
 email-validator>=2.0,<3.0
+numpy
+pandas
+scikit-learn
+joblib
