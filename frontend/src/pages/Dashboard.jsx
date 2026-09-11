@@ -1,164 +1,211 @@
-import { Activity, AlertTriangle, BatteryCharging, IndianRupee } from "lucide-react";
-import StatCard from "../components/StatCard";
-import RiskBadge from "../components/RiskBadge";
-import { dashboardStats, assets, alerts, farm } from "../data/mockData";
+import {
+  Activity,
+  AlertTriangle,
+  ArrowRight,
+  BrainCircuit,
+  Factory,
+  Leaf,
+  Zap,
+} from "lucide-react";
 
 function Dashboard() {
-  const criticalAsset = assets.find((asset) => asset.status === "Critical");
+  const stats = [
+    {
+      label: "Total Assets",
+      value: "0",
+      description: "No assets connected yet",
+      icon: Activity,
+      iconBg: "bg-[#E8F5EC]",
+      iconColor: "text-[#238542]",
+    },
+    {
+      label: "Healthy Assets",
+      value: "0",
+      description: "Waiting for sensor data",
+      icon: Leaf,
+      iconBg: "bg-[#E8F5EC]",
+      iconColor: "text-[#238542]",
+    },
+    {
+      label: "Needs Attention",
+      value: "0",
+      description: "No issues detected",
+      icon: AlertTriangle,
+      iconBg: "bg-[#FFF4DF]",
+      iconColor: "text-[#D68B23]",
+    },
+    {
+      label: "Critical Assets",
+      value: "0",
+      description: "No critical assets",
+      icon: Zap,
+      iconBg: "bg-[#FBE9E7]",
+      iconColor: "text-[#C94B3F]",
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      <section className="flex flex-col justify-between gap-4 rounded-3xl bg-[#285B3B] p-7 text-white md:flex-row md:items-center">
-        <div>
-          <p className="text-sm font-medium text-white/70">
-            Renewable Intelligence
-          </p>
 
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            {farm.name}
-          </h1>
+      {/* Farm Header */}
+      <section className="relative overflow-hidden rounded-[28px] bg-[#285B3B]">
+        <img
+          src="/images/solar-farm.jpg"
+          alt="Solar and wind renewable energy farm"
+          className="absolute inset-0 h-full w-full object-cover opacity-35"
+        />
 
-          <p className="mt-2 text-sm text-white/70">
-            {farm.location} · {farm.type} · {farm.capacity}
-          </p>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#285B3B] via-[#285B3B]/85 to-transparent" />
+
+        <div className="relative z-10 flex min-h-[280px] flex-col justify-between gap-8 p-7 md:p-9">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+              <Factory size={19} />
+            </div>
+
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-white/60">
+                Farm Overview
+              </p>
+              <p className="mt-0.5 text-sm font-medium text-white">
+                Renewable Energy Operations
+              </p>
+            </div>
+          </div>
+
+          <div className="max-w-2xl">
+            <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+              Your renewable assets,
+              <br />
+              monitored intelligently.
+            </h1>
+
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/70 md:text-base">
+              Connect your farm data to detect abnormal behaviour, understand
+              asset health and prioritize maintenance before problems grow.
+            </p>
+
+            <button className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#285B3B] shadow-sm transition hover:-translate-y-0.5 hover:bg-[#F7F5F0]">
+              <BrainCircuit size={17} />
+              Analyze Farm with AI
+              <ArrowRight size={15} />
+            </button>
+          </div>
         </div>
-
-        <button className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-[#285B3B] shadow-sm transition hover:bg-[#F7F5F0]">
-          Analyze Farm with AI
-        </button>
       </section>
 
+      {/* Statistics */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Total Assets"
-          value={dashboardStats.totalAssets}
-          description="Across the farm"
-          icon={<Activity size={19} className="text-[#238542]" />}
-          accent="#E8F5EC"
-        />
+        {stats.map((stat) => {
+          const Icon = stat.icon;
 
-        <StatCard
-          title="Healthy Assets"
-          value={dashboardStats.healthyAssets}
-          description="Operating normally"
-          icon={<BatteryCharging size={19} className="text-[#238542]" />}
-          accent="#E8F5EC"
-        />
+          return (
+            <div
+              key={stat.label}
+              className="rounded-2xl border border-[#E4E9E1] bg-white p-5 shadow-[0_4px_20px_rgba(32,39,34,0.035)] transition hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(32,39,34,0.07)]"
+            >
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-sm font-medium text-[#738078]">
+                    {stat.label}
+                  </p>
 
-        <StatCard
-          title="Assets to Monitor"
-          value={dashboardStats.monitorAssets}
-          description="Need attention"
-          icon={<AlertTriangle size={19} className="text-[#D68B23]" />}
-          accent="#FFF4DF"
-        />
+                  <p className="mt-2 text-3xl font-bold tracking-tight text-[#202722]">
+                    {stat.value}
+                  </p>
 
-        <StatCard
-          title="Critical Assets"
-          value={dashboardStats.criticalAssets}
-          description="Immediate attention"
-          icon={<AlertTriangle size={19} className="text-[#C94B3F]" />}
-          accent="#FBE9E7"
-        />
+                  <p className="mt-1 text-xs text-[#89968E]">
+                    {stat.description}
+                  </p>
+                </div>
+
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.iconBg}`}
+                >
+                  <Icon size={18} className={stat.iconColor} />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <div className="overflow-hidden rounded-3xl border border-[#E4E9E1] bg-white shadow-[0_4px_20px_rgba(32,39,34,0.04)]">
-          <div className="h-56 bg-[#F1F4ED]">
-            <img
-              src="/images/solar-farm.jpg"
-              alt="Solar farm"
-              className="h-full w-full object-cover"
-            />
-          </div>
+      {/* Farm Health + AI Analysis */}
+      <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
 
-          <div className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-[#738078]">
-                  Farm Overview
-                </p>
+        {/* Farm Health */}
+        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-sm font-medium text-[#738078]">
+                Farm Health
+              </p>
 
-                <h2 className="mt-1 text-xl font-bold text-[#202722]">
-                  {farm.name}
-                </h2>
-              </div>
-
-              <span className="rounded-full bg-[#E8F5EC] px-3 py-1 text-xs font-semibold text-[#238542]">
-                Operational
-              </span>
+              <h2 className="mt-1 text-xl font-bold text-[#202722]">
+                Waiting for farm data
+              </h2>
             </div>
 
-            <div className="mt-5 grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-xs text-[#89968E]">Capacity</p>
-                <p className="mt-1 font-semibold text-[#202722]">
-                  {farm.capacity}
-                </p>
-              </div>
+            <div className="rounded-full bg-[#F1F4ED] px-3 py-1.5 text-xs font-semibold text-[#738078]">
+              Not analyzed
+            </div>
+          </div>
 
-              <div>
-                <p className="text-xs text-[#89968E]">Asset Count</p>
-                <p className="mt-1 font-semibold text-[#202722]">
-                  {dashboardStats.totalAssets}
-                </p>
+          <div className="mt-8 flex items-center gap-6">
+            <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-full border-[10px] border-[#F1F4ED]">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-[#202722]">—</p>
+                <p className="text-[10px] text-[#89968E]">/ 100</p>
               </div>
+            </div>
 
-              <div>
-                <p className="text-xs text-[#89968E]">Farm Type</p>
-                <p className="mt-1 font-semibold text-[#202722]">
-                  {farm.type}
-                </p>
-              </div>
+            <div>
+              <p className="text-sm font-semibold text-[#202722]">
+                No health score yet
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-[#738078]">
+                Connect asset or sensor data to generate an AI-powered farm
+                health assessment.
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.04)]">
-          <p className="text-sm font-medium text-[#738078]">Farm Health</p>
-
-          <div className="mt-5 flex items-end gap-3">
-            <span className="text-5xl font-bold tracking-tight text-[#238542]">
-              82
-            </span>
-
-            <span className="mb-1 text-sm text-[#738078]">
-              / 100
-            </span>
+        {/* AI Analysis */}
+        <div className="rounded-3xl border border-[#E4E9E1] bg-[#F7F5F0] p-6">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#285B3B] shadow-sm">
+            <BrainCircuit size={20} />
           </div>
 
-          <p className="mt-2 text-sm font-medium text-[#176232]">
-            Overall health is good
+          <p className="mt-5 text-sm font-medium text-[#738078]">
+            AI Analysis
           </p>
 
-          <div className="mt-6 h-3 overflow-hidden rounded-full bg-[#F1F4ED]">
-            <div
-              className="h-full rounded-full bg-[#238542]"
-              style={{ width: "82%" }}
-            />
-          </div>
+          <h2 className="mt-1 text-xl font-bold text-[#202722]">
+            Ready when your data is.
+          </h2>
 
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <div className="rounded-2xl bg-[#F7F5F0] p-4">
-              <p className="text-xs text-[#738078]">Energy at Risk</p>
-              <p className="mt-1 text-lg font-bold text-[#202722]">
-                {dashboardStats.energyAtRisk}
-              </p>
-            </div>
+          <p className="mt-3 text-sm leading-6 text-[#738078]">
+            Once sensor data is available, AI analysis can identify unusual
+            patterns and highlight assets that may need attention.
+          </p>
 
-            <div className="rounded-2xl bg-[#F7F5F0] p-4">
-              <p className="text-xs text-[#738078]">Revenue at Risk</p>
-              <p className="mt-1 flex items-center text-lg font-bold text-[#202722]">
-                <IndianRupee size={17} />
-                {dashboardStats.revenueAtRisk.replace("₹", "")}
-              </p>
-            </div>
-          </div>
+          <button
+            disabled
+            className="mt-5 flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-[#E4E9E1] px-4 py-3 text-sm font-semibold text-[#89968E]"
+          >
+            <BrainCircuit size={16} />
+            Analysis unavailable
+          </button>
         </div>
       </section>
 
+      {/* Maintenance + Activity */}
       <section className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.04)]">
+
+        {/* Maintenance */}
+        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-[#738078]">
@@ -166,83 +213,57 @@ function Dashboard() {
               </p>
 
               <h2 className="mt-1 text-xl font-bold text-[#202722]">
-                Assets needing attention
+                Nothing requires attention
               </h2>
             </div>
 
-            <RiskBadge status={criticalAsset.status} />
+            <div className="rounded-xl bg-[#E8F5EC] p-2.5 text-[#238542]">
+              <Activity size={18} />
+            </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#FBE9E7] bg-[#FFF9F8] p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#C94B3F]">
-                  Priority #1
-                </p>
-
-                <h3 className="mt-1 text-lg font-bold text-[#202722]">
-                  {criticalAsset.name}
-                </h3>
-
-                <p className="mt-1 text-sm text-[#738078]">
-                  {criticalAsset.type} · {criticalAsset.location}
-                </p>
-              </div>
-
-              <div className="text-right">
-                <p className="text-xs text-[#738078]">Risk</p>
-                <p className="text-2xl font-bold text-[#C94B3F]">
-                  {criticalAsset.riskScore}%
-                </p>
-              </div>
-            </div>
-
-            <p className="mt-4 text-sm leading-6 text-[#202722]">
-              Temperature is rising while power output is declining.
+          <div className="mt-6 rounded-2xl border border-dashed border-[#D9E0D8] bg-[#FAFBF7] p-6 text-center">
+            <p className="text-sm font-semibold text-[#202722]">
+              No maintenance priorities yet
             </p>
 
-            <button className="mt-4 text-sm font-semibold text-[#238542] hover:underline">
-              View asset details →
-            </button>
+            <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#89968E]">
+              Maintenance priorities will appear here after assets are
+              connected and analyzed.
+            </p>
           </div>
         </div>
 
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.04)]">
-          <p className="text-sm font-medium text-[#738078]">
-            Recent Alerts
-          </p>
+        {/* Recent Activity */}
+        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-6 shadow-[0_4px_20px_rgba(32,39,34,0.035)]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-[#738078]">
+                Recent Activity
+              </p>
 
-          <h2 className="mt-1 text-xl font-bold text-[#202722]">
-            Latest asset signals
-          </h2>
+              <h2 className="mt-1 text-xl font-bold text-[#202722]">
+                Farm activity
+              </h2>
+            </div>
 
-          <div className="mt-5 space-y-3">
-            {alerts.map((alert) => (
-              <div
-                key={alert.asset}
-                className="flex items-start justify-between gap-4 rounded-2xl bg-[#F7F5F0] p-4"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-[#202722]">
-                      {alert.asset}
-                    </p>
+            <div className="rounded-xl bg-[#E3F1F6] p-2.5 text-[#2387AE]">
+              <Activity size={18} />
+            </div>
+          </div>
 
-                    <RiskBadge status={alert.status} />
-                  </div>
+          <div className="mt-6 rounded-2xl border border-dashed border-[#D9E0D8] bg-[#FAFBF7] p-6 text-center">
+            <p className="text-sm font-semibold text-[#202722]">
+              No activity yet
+            </p>
 
-                  <p className="mt-1 text-xs leading-5 text-[#738078]">
-                    {alert.message}
-                  </p>
-                </div>
-
-                <span className="whitespace-nowrap text-[11px] text-[#89968E]">
-                  {alert.time}
-                </span>
-              </div>
-            ))}
+            <p className="mx-auto mt-2 max-w-sm text-xs leading-5 text-[#89968E]">
+              Asset alerts, analyses and maintenance updates will appear here
+              once your farm is connected.
+            </p>
           </div>
         </div>
+
       </section>
     </div>
   );
