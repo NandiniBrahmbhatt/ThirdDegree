@@ -15,6 +15,35 @@ import {
 
 import { apiRequest } from "../services/api";
 
+function formatScore(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return 0;
+  }
+
+  // Support both the intended 0-100 format and older 0-1 responses.
+  if (number >= 0 && number <= 1) {
+    return Math.round(number * 100);
+  }
+
+  return Math.round(number);
+}
+
+function getSeverityFromAnalysis(analysis) {
+  const risk = formatScore(analysis.risk_score);
+
+  if (analysis.status === "at_risk" || risk >= 75) {
+    return "critical";
+  }
+
+  if (analysis.status === "watch" || risk >= 25) {
+    return "warning";
+  }
+
+  return "resolved";
+}
+
 function getSeverityStyles(severity) {
   if (severity === "critical") {
     return {
@@ -40,27 +69,13 @@ function getSeverityStyles(severity) {
     wrapper: "border-emerald-200 bg-emerald-50/30",
     icon: "bg-emerald-100 text-emerald-600",
     badge: "bg-emerald-100 text-emerald-700",
-    label: "Resolved",
+    label: "Healthy",
     progress: "bg-emerald-500",
   };
 }
 
-function getSeverityFromAnalysis(analysis) {
-  const risk = Number(analysis.risk_score || 0);
-
-  if (analysis.status === "at_risk" || risk >= 75) {
-    return "critical";
-  }
-
-  if (analysis.status === "watch" || risk >= 25) {
-    return "warning";
-  }
-
-  return "resolved";
-}
-
 function getStatusFromSeverity(severity) {
-  return severity === "resolved" ? "Resolved" : "Active";
+  return severity === "resolved" ? "Healthy" : "Active";
 }
 
 function formatTime(value) {
@@ -76,6 +91,12 @@ function formatTime(value) {
 
   const now = new Date();
   const differenceMs = now.getTime() - date.getTime();
+
+  // Future timestamps should not show negative "ago" values.
+  if (differenceMs < 0) {
+    return "Just now";
+  }
+
   const differenceMinutes = Math.floor(
     differenceMs / (1000 * 60)
   );
@@ -107,20 +128,6 @@ function formatTime(value) {
   return `${differenceDays} day${
     differenceDays !== 1 ? "s" : ""
   } ago`;
-}
-
-function formatScore(value) {
-  const number = Number(value);
-
-  if (!Number.isFinite(number)) {
-    return 0;
-  }
-
-  if (number >= 0 && number <= 1) {
-    return Math.round(number * 100);
-  }
-
-  return Math.round(number);
 }
 
 function SummaryCard({
@@ -210,7 +217,7 @@ function AlertCard({ alert }) {
 
           <span
             className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold ${
-              alert.status === "Resolved"
+              alert.status === "Healthy"
                 ? "bg-emerald-100 text-emerald-700"
                 : "bg-white/80 text-slate-600"
             }`}
@@ -314,8 +321,7 @@ export default function Alerts() {
   useEffect(() => {
     loadAlerts();
 
-    // Refresh alerts periodically so newly generated
-    // analyses appear without manually refreshing the page.
+    // Keep Alerts synchronized with newly saved AI analyses.
     const timer = setInterval(() => {
       loadAlerts();
     }, 5000);
@@ -334,7 +340,6 @@ export default function Alerts() {
       );
 
       const severity = getSeverityFromAnalysis(analysis);
-
       const risk = formatScore(analysis.risk_score);
 
       const title =
@@ -351,21 +356,27 @@ export default function Alerts() {
 
       return {
         id: analysis.analysis_id,
-        asset: asset?.asset_label || `Asset ${analysis.asset_id}`,
+        asset:
+          asset?.asset_label ||
+          `Asset ${analysis.asset_id}`,
+
         assetType:
           asset?.asset_type === "solar"
             ? "Solar Asset"
             : asset?.asset_type === "wind"
               ? "Wind Turbine"
               : "Renewable Asset",
+
         title,
         description,
         severity,
         risk,
         time: formatTime(analysis.timestamp),
+
         recommendation:
           analysis.recommended_action ||
           "Continue monitoring the asset.",
+
         status: getStatusFromSeverity(severity),
       };
     });
@@ -383,8 +394,8 @@ export default function Alerts() {
     (alert) => alert.severity === "warning"
   );
 
-  const resolvedAlerts = alerts.filter(
-    (alert) => alert.status === "Resolved"
+  const healthyAlerts = alerts.filter(
+    (alert) => alert.severity === "resolved"
   );
 
   return (
@@ -486,7 +497,7 @@ export default function Alerts() {
                 icon={<CheckCircle2 size={21} />}
                 iconClass="bg-emerald-50 text-emerald-600"
                 label="Healthy"
-                value={resolvedAlerts.length}
+                value={healthyAlerts.length}
                 description="Latest analyses without active risk"
               />
             </section>
@@ -538,7 +549,7 @@ export default function Alerts() {
               )}
             </section>
 
-            {/* Healthy / resolved */}
+            {/* Healthy */}
             <section>
               <div className="mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
@@ -550,7 +561,7 @@ export default function Alerts() {
                 </h2>
               </div>
 
-              {resolvedAlerts.length === 0 ? (
+              {healthyAlerts.length === 0 ? (
                 <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
                   <ShieldCheck
                     size={28}
@@ -568,7 +579,7 @@ export default function Alerts() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {resolvedAlerts.map((alert) => (
+                  {healthyAlerts.map((alert) => (
                     <AlertCard
                       key={alert.id}
                       alert={alert}
