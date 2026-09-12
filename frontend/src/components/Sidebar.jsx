@@ -1,136 +1,145 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Factory,
+  LayoutDashboard,
+  Building2,
   Cpu,
   Wrench,
   Users,
-  Leaf,
-  Home,
+  UserRound,
   Settings,
+  LogOut,
 } from "lucide-react";
-import { useLanguage } from "../hooks/useLanguage";
-import { getTranslation } from "../services/translationService";
-
-const navigation = [
-  {
-    name: "dashboard",
-    path: "/dashboard",
-    icon: Home,
-  },
-  {
-    name: "farms",
-    path: "/farms",
-    icon: Factory,
-  },
-  {
-    name: "assets",
-    path: "/assets",
-    icon: Cpu,
-  },
-  {
-    name: "maintenance",
-    path: "/maintenance",
-    icon: Wrench,
-  },
-  {
-    name: "technicians",
-    path: "/technicians",
-    icon: Users,
-  },
-];
 
 function Sidebar() {
-  const { language } = useLanguage();
+  const navigate = useNavigate();
+
+  const navigationLinks = [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "Farms",
+      path: "/farms",
+      icon: Building2,
+    },
+    {
+      label: "Assets",
+      path: "/assets",
+      icon: Cpu,
+    },
+    {
+      label: "Maintenance",
+      path: "/maintenance",
+      icon: Wrench,
+    },
+    {
+      label: "Technicians",
+      path: "/technicians",
+      icon: Users,
+    },
+  ];
+
+  const accountLinks = [
+    {
+      label: "Profile",
+      path: "/profile",
+      icon: UserRound,
+    },
+    {
+      label: "Settings",
+      path: "/settings",
+      icon: Settings,
+    },
+  ];
+
+  const linkClass = ({ isActive }) =>
+    `group flex items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-medium transition ${
+      isActive
+        ? "bg-[#E8EDF7] text-[#001e61]"
+        : "text-[#738078] hover:bg-[#F0F3F9] hover:text-[#001e61]"
+    }`;
+
+  const handleLogout = () => {
+    localStorage.removeItem("renewai_user");
+    navigate("/");
+  };
 
   return (
-    <aside className="fixed left-0 top-0 z-50 hidden h-screen w-57 border-r border-[#E4E9E1] bg-[#FAFBF7] lg:block">
-
-      {/* Brand */}
-      <div className="px-7 pt-6">
-        <NavLink
-          to="/dashboard"
-          className="flex items-center gap-3"
+    <aside className="fixed left-0 top-0 z-50 hidden h-screen w-57 border-r border-[#E4E9E1] bg-[#FAFBF7] lg:flex lg:flex-col">
+      {/* Logo */}
+      <div className="px-6 pb-8 pt-7">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="flex items-center gap-2"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[ #001e61] text-white">
-            <Leaf
-              size={21}
-              strokeWidth={1.8}
-            />
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#001e61] text-[12px] font-bold text-white">
+            R
           </div>
 
-          <div>
-            <h1 className="text-[20px] font-bold leading-none tracking-[-0.04em] text-[#176232]">
-              RenewAI
-            </h1>
-
-            <p className="mt-1 text-[9px] font-medium text-[#89968E]">
-              Renewable Intelligence
-            </p>
-          </div>
-        </NavLink>
+          <span className="text-[18px] font-semibold tracking-[-0.03em] text-[#202722]">
+            RenewAI
+          </span>
+        </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="mt-9 px-5">
-        <div className="space-y-1.5">
-          {navigation.map((item) => {
-            const Icon = item.icon;
+      {/* Main navigation */}
+      <nav className="flex-1 px-4">
+        <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+          Workspace
+        </p>
+
+        <div className="space-y-1">
+          {navigationLinks.map((link) => {
+            const Icon = link.icon;
 
             return (
               <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `group flex h-10.75 items-center gap-4 rounded-[11px] px-3 text-[13px] font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-[#E3F1E6] text-[#176232]"
-                      : "text-[#202722] hover:bg-[#F0F3F9] hover:text-[#176232]"
-                  }`
-                }
+                key={link.path}
+                to={link.path}
+                className={linkClass}
               >
-                <Icon
-                  size={19}
-                  strokeWidth={1.8}
-                />
+                <Icon size={17} strokeWidth={1.8} />
+                <span>{link.label}</span>
+              </NavLink>
+            );
+          })}
+        </div>
 
-                <span>
-                  {getTranslation(language, item.name)}
-                </span>
+        <div className="my-7 h-px bg-[#E4E9E1]" />
+
+        <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+          Account
+        </p>
+
+        <div className="space-y-1">
+          {accountLinks.map((link) => {
+            const Icon = link.icon;
+
+            return (
+              <NavLink
+                key={link.path}
+                to={link.path}
+                className={linkClass}
+              >
+                <Icon size={17} strokeWidth={1.8} />
+                <span>{link.label}</span>
               </NavLink>
             );
           })}
         </div>
       </nav>
 
-      {/* Bottom */}
-      <div className="absolute bottom-6 left-0 w-full px-7">
-
-        <div className="mb-5 h-px bg-[#E4E9E1]" />
-
+      {/* Logout */}
+      <div className="border-t border-[#E4E9E1] p-4">
         <button
-          className="flex w-full items-center gap-3 text-left"
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-medium text-[#738078] transition hover:bg-[#F0F3F9] hover:text-[#001e61]"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E3F1F6] text-[11px] font-bold text-[#176232]">
-            OP
-          </div>
-
-          <div>
-            <p className="text-[12px] font-semibold text-[#202722]">
-              Operator
-            </p>
-
-            <p className="text-[10px] text-[#89968E]">
-              Farm Owner
-            </p>
-          </div>
-
-          <Settings
-            size={15}
-            strokeWidth={1.7}
-            className="ml-auto text-[#89968E]"
-          />
+          <LogOut size={17} strokeWidth={1.8} />
+          <span>Logout</span>
         </button>
-
       </div>
     </aside>
   );

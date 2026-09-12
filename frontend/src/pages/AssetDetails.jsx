@@ -1,5 +1,216 @@
+import { Link, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Activity,
+  AlertTriangle,
+  CalendarDays,
+  CheckCircle2,
+  Cpu,
+  Gauge,
+  Wrench,
+} from "lucide-react";
+
 function AssetDetails() {
-  return <h1>AssetDetails</h1>;
+  const { id } = useParams();
+
+  return (
+    <div className="min-h-screen bg-[#FAFBF7] px-8 pb-12 pt-28 text-[#202722] xl:px-12">
+      <Link
+        to="/assets"
+        className="inline-flex items-center gap-2 text-[12px] font-medium text-[#738078] transition hover:text-[#001e61]"
+      >
+        <ArrowLeft size={16} strokeWidth={1.8} />
+        Back to Assets
+      </Link>
+
+      <div className="mt-7 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
+            Asset details
+          </p>
+
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em]">
+            Asset #{id}
+          </h1>
+
+          <p className="mt-3 max-w-xl text-sm leading-6 text-[#738078]">
+            View asset information, monitoring status, and AI-assisted
+            maintenance insights.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 rounded-full border border-[#E4E9E1] bg-white px-4 py-2 text-[11px] font-semibold text-[#738078]">
+          <Cpu size={15} strokeWidth={1.8} />
+          Renewable Asset
+        </div>
+      </div>
+
+      <div className="mt-10 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
+        <section className="rounded-3xl border border-[#E4E9E1] bg-white p-7">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8EDF7] text-[#001e61]">
+              <Cpu size={22} strokeWidth={1.8} />
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#89968E]">
+                Asset
+              </p>
+
+              <h2 className="mt-1 text-xl font-semibold">
+                No asset data connected
+              </h2>
+            </div>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl bg-[#F7F5F0] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+                Asset type
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#738078]">
+                Awaiting backend data
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F5F0] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+                Installation
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#738078]">
+                Awaiting backend data
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F5F0] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+                Capacity
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#738078]">
+                Awaiting backend data
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-[#F7F5F0] p-5">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
+                Location
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-[#738078]">
+                Awaiting backend data
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-3xl border border-[#E4E9E1] bg-white p-7">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EDF7] text-[#001e61]">
+              <Gauge size={20} strokeWidth={1.8} />
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#89968E]">
+                AI analysis
+              </p>
+
+              <h2 className="mt-1 text-lg font-semibold">
+                Health status
+              </h2>
+            </div>
+          </div>
+
+          <div className="mt-7 rounded-2xl border border-dashed border-[#E4E9E1] px-5 py-7 text-center">
+            <Activity
+              size={23}
+              strokeWidth={1.7}
+              className="mx-auto text-[#89968E]"
+            />
+
+            <p className="mt-4 text-sm font-medium">
+              No analysis available
+            </p>
+
+            <p className="mt-2 text-xs leading-5 text-[#738078]">
+              AI analysis will appear here once sensor data is connected.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <section className="mt-6 rounded-3xl border border-[#E4E9E1] bg-white p-7">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F0F3F9] text-[#001e61]">
+            <Wrench size={20} strokeWidth={1.8} />
+          </div>
+
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#89968E]">
+              Maintenance
+            </p>
+
+            <h2 className="mt-1 text-lg font-semibold">
+              Maintenance insights
+            </h2>
+          </div>
+        </div>
+
+        <div className="mt-7 grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-[#E4E9E1] p-5">
+            <CheckCircle2
+              size={19}
+              strokeWidth={1.8}
+              className="text-[#001e61]"
+            />
+
+            <p className="mt-4 text-sm font-semibold">
+              Current status
+            </p>
+
+            <p className="mt-2 text-xs leading-5 text-[#738078]">
+              Waiting for connected asset data.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[#E4E9E1] p-5">
+            <AlertTriangle
+              size={19}
+              strokeWidth={1.8}
+              className="text-[#D68B23]"
+            />
+
+            <p className="mt-4 text-sm font-semibold">
+              Risk assessment
+            </p>
+
+            <p className="mt-2 text-xs leading-5 text-[#738078]">
+              Risk scoring will be provided by the AI analysis service.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-[#E4E9E1] p-5">
+            <CalendarDays
+              size={19}
+              strokeWidth={1.8}
+              className="text-[#2387AE]"
+            />
+
+            <p className="mt-4 text-sm font-semibold">
+              Maintenance schedule
+            </p>
+
+            <p className="mt-2 text-xs leading-5 text-[#738078]">
+              Maintenance recommendations will appear when analysis is
+              available.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }
 
-export default AssetDetails;
+export default AssetDetails;  
