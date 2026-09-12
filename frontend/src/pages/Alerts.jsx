@@ -1,9 +1,11 @@
+import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   Bell,
   CheckCircle2,
   ChevronRight,
   Clock3,
+  Loader2,
   ShieldAlert,
   ShieldCheck,
   TrendingUp,
@@ -11,60 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 
-const mockAlerts = [
-  {
-    id: 1,
-    asset: "WT-001",
-    assetType: "Wind Turbine",
-    title: "Possible bearing degradation",
-    description:
-      "High vibration and elevated temperature detected in recent sensor readings.",
-    severity: "critical",
-    risk: 82,
-    time: "12 minutes ago",
-    recommendation: "Schedule bearing inspection at the earliest opportunity.",
-    status: "Active",
-  },
-  {
-    id: 2,
-    asset: "SP-002",
-    assetType: "Solar Panel",
-    title: "Possible excessive soiling",
-    description:
-      "Power output is lower than expected relative to the current solar irradiance.",
-    severity: "warning",
-    risk: 61,
-    time: "34 minutes ago",
-    recommendation: "Inspect the panels and consider cleaning them.",
-    status: "Active",
-  },
-  {
-    id: 3,
-    asset: "WT-003",
-    assetType: "Wind Turbine",
-    title: "Temperature variation detected",
-    description:
-      "Operating temperature has moved outside the preferred range.",
-    severity: "warning",
-    risk: 47,
-    time: "1 hour ago",
-    recommendation: "Continue monitoring temperature and vibration trends.",
-    status: "Active",
-  },
-  {
-    id: 4,
-    asset: "SP-001",
-    assetType: "Solar Panel",
-    title: "Anomaly cleared",
-    description:
-      "Sensor readings have returned to the expected operating range.",
-    severity: "resolved",
-    risk: 12,
-    time: "2 hours ago",
-    recommendation: "Continue routine monitoring.",
-    status: "Resolved",
-  },
-];
+import { apiRequest } from "../services/api";
 
 function getSeverityStyles(severity) {
   if (severity === "critical") {
@@ -96,18 +45,110 @@ function getSeverityStyles(severity) {
   };
 }
 
-function SummaryCard({ icon, label, value, description, iconClass }) {
+function getSeverityFromAnalysis(analysis) {
+  const risk = Number(analysis.risk_score || 0);
+
+  if (analysis.status === "at_risk" || risk >= 75) {
+    return "critical";
+  }
+
+  if (analysis.status === "watch" || risk >= 25) {
+    return "warning";
+  }
+
+  return "resolved";
+}
+
+function getStatusFromSeverity(severity) {
+  return severity === "resolved" ? "Resolved" : "Active";
+}
+
+function formatTime(value) {
+  if (!value) {
+    return "Not available";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  const now = new Date();
+  const differenceMs = now.getTime() - date.getTime();
+  const differenceMinutes = Math.floor(
+    differenceMs / (1000 * 60)
+  );
+
+  if (differenceMinutes < 1) {
+    return "Just now";
+  }
+
+  if (differenceMinutes < 60) {
+    return `${differenceMinutes} minute${
+      differenceMinutes !== 1 ? "s" : ""
+    } ago`;
+  }
+
+  const differenceHours = Math.floor(
+    differenceMinutes / 60
+  );
+
+  if (differenceHours < 24) {
+    return `${differenceHours} hour${
+      differenceHours !== 1 ? "s" : ""
+    } ago`;
+  }
+
+  const differenceDays = Math.floor(
+    differenceHours / 24
+  );
+
+  return `${differenceDays} day${
+    differenceDays !== 1 ? "s" : ""
+  } ago`;
+}
+
+function formatScore(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return 0;
+  }
+
+  if (number >= 0 && number <= 1) {
+    return Math.round(number * 100);
+  }
+
+  return Math.round(number);
+}
+
+function SummaryCard({
+  icon,
+  label,
+  value,
+  description,
+  iconClass,
+}) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between">
-        <div className={`rounded-xl p-3 ${iconClass}`}>{icon}</div>
+        <div className={`rounded-xl p-3 ${iconClass}`}>
+          {icon}
+        </div>
 
-        <span className="text-2xl font-bold text-slate-900">{value}</span>
+        <span className="text-2xl font-bold text-slate-900">
+          {value}
+        </span>
       </div>
 
-      <p className="mt-4 text-sm font-bold text-slate-800">{label}</p>
+      <p className="mt-4 text-sm font-bold text-slate-800">
+        {label}
+      </p>
 
-      <p className="mt-1 text-xs text-slate-500">{description}</p>
+      <p className="mt-1 text-xs text-slate-500">
+        {description}
+      </p>
     </div>
   );
 }
@@ -123,7 +164,9 @@ function AlertCard({ alert }) {
         {/* Top row */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-start gap-4">
-            <div className={`shrink-0 rounded-xl p-3 ${styles.icon}`}>
+            <div
+              className={`shrink-0 rounded-xl p-3 ${styles.icon}`}
+            >
               {alert.severity === "critical" ? (
                 <ShieldAlert size={21} />
               ) : alert.severity === "warning" ? (
@@ -150,9 +193,13 @@ function AlertCard({ alert }) {
                 <span className="font-semibold text-slate-700">
                   {alert.asset}
                 </span>
+
                 <span>•</span>
+
                 <span>{alert.assetType}</span>
+
                 <span>•</span>
+
                 <span className="inline-flex items-center gap-1">
                   <Clock3 size={12} />
                   {alert.time}
@@ -181,7 +228,11 @@ function AlertCard({ alert }) {
         <div className="rounded-xl border border-white/80 bg-white/70 p-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
-              <TrendingUp size={16} className="text-slate-500" />
+              <TrendingUp
+                size={16}
+                className="text-slate-500"
+              />
+
               <span className="text-xs font-semibold text-slate-600">
                 Risk Score
               </span>
@@ -195,7 +246,12 @@ function AlertCard({ alert }) {
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
             <div
               className={`h-full rounded-full ${styles.progress}`}
-              style={{ width: `${alert.risk}%` }}
+              style={{
+                width: `${Math.min(
+                  100,
+                  Math.max(0, alert.risk)
+                )}%`,
+              }}
             />
           </div>
         </div>
@@ -222,19 +278,112 @@ function AlertCard({ alert }) {
 }
 
 export default function Alerts() {
-  const activeAlerts = mockAlerts.filter(
+  const [analyses, setAnalyses] = useState([]);
+  const [assets, setAssets] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  async function loadAlerts() {
+    try {
+      setError("");
+
+      const [analysisData, assetData] = await Promise.all([
+        apiRequest("/analyses/dashboard"),
+        apiRequest("/assets"),
+      ]);
+
+      setAnalyses(
+        Array.isArray(analysisData) ? analysisData : []
+      );
+
+      setAssets(
+        Array.isArray(assetData) ? assetData : []
+      );
+    } catch (err) {
+      console.error("Unable to load alerts:", err);
+
+      setError(
+        "Unable to load your alerts. Please refresh and try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadAlerts();
+
+    // Refresh alerts periodically so newly generated
+    // analyses appear without manually refreshing the page.
+    const timer = setInterval(() => {
+      loadAlerts();
+    }, 5000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
+  const alerts = useMemo(() => {
+    return analyses.map((analysis) => {
+      const asset = assets.find(
+        (item) =>
+          Number(item.asset_id) ===
+          Number(analysis.asset_id)
+      );
+
+      const severity = getSeverityFromAnalysis(analysis);
+
+      const risk = formatScore(analysis.risk_score);
+
+      const title =
+        analysis.probable_issue ||
+        (analysis.anomaly_detected
+          ? "Anomaly detected"
+          : "Asset operating normally");
+
+      const description =
+        analysis.contributing_factors ||
+        (analysis.anomaly_detected
+          ? "The AI model detected an unusual sensor pattern in the latest asset reading."
+          : "The latest sensor reading is within the expected operating range.");
+
+      return {
+        id: analysis.analysis_id,
+        asset: asset?.asset_label || `Asset ${analysis.asset_id}`,
+        assetType:
+          asset?.asset_type === "solar"
+            ? "Solar Asset"
+            : asset?.asset_type === "wind"
+              ? "Wind Turbine"
+              : "Renewable Asset",
+        title,
+        description,
+        severity,
+        risk,
+        time: formatTime(analysis.timestamp),
+        recommendation:
+          analysis.recommended_action ||
+          "Continue monitoring the asset.",
+        status: getStatusFromSeverity(severity),
+      };
+    });
+  }, [analyses, assets]);
+
+  const activeAlerts = alerts.filter(
     (alert) => alert.status === "Active"
   );
 
-  const criticalAlerts = mockAlerts.filter(
+  const criticalAlerts = alerts.filter(
     (alert) => alert.severity === "critical"
   );
 
-  const warningAlerts = mockAlerts.filter(
+  const warningAlerts = alerts.filter(
     (alert) => alert.severity === "warning"
   );
 
-  const resolvedAlerts = mockAlerts.filter(
+  const resolvedAlerts = alerts.filter(
     (alert) => alert.status === "Resolved"
   );
 
@@ -244,12 +393,14 @@ export default function Alerts() {
         {/* Header */}
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-[#001e61] p-6 text-white shadow-xl sm:p-8">
           <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-red-400/10 blur-3xl" />
+
           <div className="absolute -bottom-24 left-1/3 h-64 w-64 rounded-full bg-emerald-400/10 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="max-w-2xl">
               <div className="mb-3 flex items-center gap-2 text-amber-300">
                 <Bell size={18} />
+
                 <span className="text-xs font-bold uppercase tracking-[0.15em]">
                   Asset Intelligence
                 </span>
@@ -260,13 +411,16 @@ export default function Alerts() {
               </h1>
 
               <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
-                Stay informed about potential issues detected across your
-                renewable energy assets.
+                Stay informed about potential issues detected
+                across your renewable energy assets.
               </p>
             </div>
 
             <div className="hidden rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur-sm sm:block">
-              <Bell size={38} className="text-amber-300" />
+              <Bell
+                size={38}
+                className="text-amber-300"
+              />
 
               <p className="mt-3 text-sm font-semibold">
                 {activeAlerts.length} active
@@ -279,94 +433,164 @@ export default function Alerts() {
           </div>
         </section>
 
-        {/* Summary */}
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <SummaryCard
-            icon={<Bell size={21} />}
-            iconClass="bg-blue-50 text-blue-600"
-            label="Total Alerts"
-            value={mockAlerts.length}
-            description="Detected across your assets"
-          />
+        {/* Loading */}
+        {loading && (
+          <section className="flex items-center justify-center rounded-2xl border border-slate-200 bg-white p-10 shadow-sm">
+            <div className="flex items-center gap-3 text-sm text-slate-500">
+              <Loader2
+                size={19}
+                className="animate-spin text-[#001e61]"
+              />
 
-          <SummaryCard
-            icon={<ShieldAlert size={21} />}
-            iconClass="bg-red-50 text-red-600"
-            label="Critical"
-            value={criticalAlerts.length}
-            description="Require immediate attention"
-          />
-
-          <SummaryCard
-            icon={<AlertTriangle size={21} />}
-            iconClass="bg-amber-50 text-amber-600"
-            label="Warnings"
-            value={warningAlerts.length}
-            description="Keep these assets under watch"
-          />
-
-          <SummaryCard
-            icon={<CheckCircle2 size={21} />}
-            iconClass="bg-emerald-50 text-emerald-600"
-            label="Resolved"
-            value={resolvedAlerts.length}
-            description="Issues that have cleared"
-          />
-        </section>
-
-        {/* Active Alerts */}
-        <section>
-          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-                Attention Required
-              </p>
-
-              <h2 className="mt-1 text-xl font-bold text-slate-900">
-                Active Alerts
-              </h2>
+              Loading AI alerts...
             </div>
+          </section>
+        )}
 
-            <p className="text-xs text-slate-500">
-              {activeAlerts.length} active alert
-              {activeAlerts.length !== 1 ? "s" : ""}
-            </p>
-          </div>
+        {/* Error */}
+        {!loading && error && (
+          <section className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-700">
+            {error}
+          </section>
+        )}
 
-          <div className="space-y-4">
-            {activeAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
-            ))}
-          </div>
-        </section>
+        {!loading && !error && (
+          <>
+            {/* Summary */}
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <SummaryCard
+                icon={<Bell size={21} />}
+                iconClass="bg-blue-50 text-blue-600"
+                label="Total Analyses"
+                value={alerts.length}
+                description="Latest AI analysis for each asset"
+              />
 
-        {/* Resolved */}
-        <section>
-          <div className="mb-4">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-              Alert History
-            </p>
+              <SummaryCard
+                icon={<ShieldAlert size={21} />}
+                iconClass="bg-red-50 text-red-600"
+                label="Critical"
+                value={criticalAlerts.length}
+                description="Require immediate attention"
+              />
 
-            <h2 className="mt-1 text-xl font-bold text-slate-900">
-              Recently Resolved
-            </h2>
-          </div>
+              <SummaryCard
+                icon={<AlertTriangle size={21} />}
+                iconClass="bg-amber-50 text-amber-600"
+                label="Warnings"
+                value={warningAlerts.length}
+                description="Keep these assets under watch"
+              />
 
-          <div className="space-y-4">
-            {resolvedAlerts.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
-            ))}
-          </div>
-        </section>
+              <SummaryCard
+                icon={<CheckCircle2 size={21} />}
+                iconClass="bg-emerald-50 text-emerald-600"
+                label="Healthy"
+                value={resolvedAlerts.length}
+                description="Latest analyses without active risk"
+              />
+            </section>
 
-        {/* Footer hint */}
-        <div className="flex items-center justify-center gap-2 py-3 text-xs text-slate-400">
-          <XCircle size={14} />
-          <span>
-            Alerts will be automatically generated from AI asset analysis.
-          </span>
-          <ChevronRight size={14} />
-        </div>
+            {/* Active Alerts */}
+            <section>
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                    Attention Required
+                  </p>
+
+                  <h2 className="mt-1 text-xl font-bold text-slate-900">
+                    Active Alerts
+                  </h2>
+                </div>
+
+                <p className="text-xs text-slate-500">
+                  {activeAlerts.length} active alert
+                  {activeAlerts.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+
+              {activeAlerts.length === 0 ? (
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-8 text-center">
+                  <CheckCircle2
+                    size={30}
+                    className="mx-auto text-emerald-600"
+                  />
+
+                  <p className="mt-4 text-sm font-bold text-slate-800">
+                    No active alerts
+                  </p>
+
+                  <p className="mt-2 text-xs text-slate-500">
+                    Your latest AI analyses do not indicate
+                    an asset requiring immediate attention.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeAlerts.map((alert) => (
+                    <AlertCard
+                      key={alert.id}
+                      alert={alert}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Healthy / resolved */}
+            <section>
+              <div className="mb-4">
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                  Latest Status
+                </p>
+
+                <h2 className="mt-1 text-xl font-bold text-slate-900">
+                  Healthy Assets
+                </h2>
+              </div>
+
+              {resolvedAlerts.length === 0 ? (
+                <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+                  <ShieldCheck
+                    size={28}
+                    className="mx-auto text-slate-400"
+                  />
+
+                  <p className="mt-4 text-sm font-bold text-slate-800">
+                    No healthy analysis results yet
+                  </p>
+
+                  <p className="mt-2 text-xs text-slate-500">
+                    Run an AI analysis to see the latest asset
+                    status here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {resolvedAlerts.map((alert) => (
+                    <AlertCard
+                      key={alert.id}
+                      alert={alert}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Footer */}
+            <div className="flex items-center justify-center gap-2 py-3 text-xs text-slate-400">
+              <XCircle size={14} />
+
+              <span>
+                Alerts are generated from real AI asset
+                analysis.
+              </span>
+
+              <ChevronRight size={14} />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
