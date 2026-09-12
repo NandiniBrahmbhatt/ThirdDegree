@@ -48,6 +48,7 @@ CREATE TABLE sensor_readings (
 );
 
 -- AI ANALYSES
+-- AI ANALYSES
 CREATE TABLE ai_analyses (
     analysis_id SERIAL PRIMARY KEY,
     asset_id INTEGER NOT NULL REFERENCES assets(asset_id) ON DELETE CASCADE,
@@ -58,7 +59,9 @@ CREATE TABLE ai_analyses (
     status TEXT CHECK (status IN ('healthy', 'watch', 'at_risk')),
     probable_issue TEXT,
     contributing_factors TEXT,
-    recommended_action TEXT
+    recommended_action TEXT,
+    energy_loss_estimate REAL,
+    revenue_loss_estimate REAL
 );
 
 -- TECHNICIAN PROFILE
