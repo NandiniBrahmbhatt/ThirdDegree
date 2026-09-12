@@ -15,7 +15,19 @@ import {
 function Sidebar() {
   const navigate = useNavigate();
 
-  const navigationLinks = [
+  const savedUser = localStorage.getItem("renewai_user");
+
+  let user = null;
+
+  try {
+    user = savedUser ? JSON.parse(savedUser) : null;
+  } catch {
+    user = null;
+  }
+
+  const isTechnician = user?.role === "technician";
+
+  const farmerNavigationLinks = [
     {
       label: "Dashboard",
       path: "/dashboard",
@@ -53,6 +65,18 @@ function Sidebar() {
     },
   ];
 
+  const technicianNavigationLinks = [
+    {
+      label: "Dashboard",
+      path: "/technician",
+      icon: LayoutDashboard,
+    },
+  ];
+
+  const navigationLinks = isTechnician
+    ? technicianNavigationLinks
+    : farmerNavigationLinks;
+
   const accountLinks = [
     {
       label: "Profile",
@@ -75,7 +99,12 @@ function Sidebar() {
 
   const handleLogout = () => {
     localStorage.removeItem("renewai_user");
+    localStorage.removeItem("renewai_token");
     navigate("/");
+  };
+
+  const handleLogoClick = () => {
+    navigate(isTechnician ? "/technician" : "/dashboard");
   };
 
   return (
@@ -83,7 +112,7 @@ function Sidebar() {
       {/* Logo */}
       <div className="px-6 pb-8 pt-7">
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={handleLogoClick}
           className="flex items-center gap-2"
         >
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#001e61] text-[12px] font-bold text-white">
