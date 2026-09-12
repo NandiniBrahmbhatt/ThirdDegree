@@ -1,181 +1,417 @@
-import { useState } from "react";
-import { Cpu, Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  CalendarDays,
+  MapPin,
+  Plus,
+  Sun,
+  Wind,
+  X,
+} from "lucide-react";
+import { apiRequest } from "../services/api";
 
 function Assets() {
-  const [showModal, setShowModal] = useState(false);
+  const [farms, setFarms] = useState([]);
+  const [assets, setAssets] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
+    farmId: "",
     assetLabel: "",
     assetType: "solar",
-    installationDate: "",
     capacity: "",
+    installationDate: "",
     location: "",
   });
 
-  const handleChange = (event) => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      const [farmsResponse, assetsResponse] = await Promise.all([
+        apiRequest("/farms/"),
+        apiRequest("/assets/"),
+      ]);
+
+      const farmList = Array.isArray(farmsResponse)
+        ? farmsResponse
+        : farmsResponse?.items || [];
+
+      const assetList = Array.isArray(assetsResponse)
+        ? assetsResponse
+        : assetsResponse?.items || [];
+
+      setFarms(farmList);
+      setAssets(assetList);
+
+      if (farmList.length > 0) {
+        setForm((previous) => ({
+          ...previous,
+          farmId: previous.farmId || String(farmList[0].farm_id),
+        }));
+      }
+    } catch (err) {
+      console.error("Unable to load farms/assets:", err);
+      setError("Unable to load your farms and assets.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleChange(event) {
     const { name, value } = event.target;
 
-    setForm((current) => ({
-      ...current,
+    setForm((previous) => ({
+      ...previous,
       [name]: value,
     }));
-  };
+  }
 
-  const handleSubmit = (event) => {
+  function openModal() {
+    setError("");
+
+    setForm((previous) => ({
+      ...previous,
+      farmId: previous.farmId || (farms[0] ? String(farms[0].farm_id) : ""),
+    }));
+
+    setIsModalOpen(true);
+  }
+
+  function closeModal() {
+    if (!saving) {
+      setIsModalOpen(false);
+    }
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    // Backend integration will be added later.
-    setShowModal(false);
-  };
+    if (!form.farmId) {
+      setError("Please select a farm.");
+      return;
+    }
+
+    if (!form.assetLabel.trim()) {
+      setError("Please enter an asset label.");
+      return;
+    }
+
+    setSaving(true);
+    setError("");
+
+    try {
+      const newAsset = await apiRequest("/assets/", {
+        method: "POST",
+        body: JSON.stringify({
+          farm_id: Number(form.farmId),
+          asset_label: form.assetLabel.trim(),
+          asset_type: form.assetType,
+          installation_date: form.installationDate || null,
+          capacity: form.capacity ? Number(form.capacity) : null,
+          location: form.location.trim() || null,
+        }),
+      });
+
+      setAssets((previous) => [newAsset, ...previous]);
+
+      setForm({
+        farmId: form.farmId,
+        assetLabel: "",
+        assetType: "solar",
+        capacity: "",
+        installationDate: "",
+        location: "",
+      });
+
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Unable to create asset:", err);
+      setError("Unable to create the asset. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function getFarmName(farmId) {
+    const farm = farms.find(
+      (item) => Number(item.farm_id) === Number(farmId)
+    );
+
+    return farm?.farm_name || "Unknown farm";
+  }
+
+  function formatDate(date) {
+    if (!date) return "Not specified";
+
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return date;
+    }
+
+    return parsedDate.toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  }
 
   return (
-    <div className="min-h-screen bg-[#FAFBF7] px-8 pb-12 pt-28 text-[#202722] xl:px-12">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="min-h-screen px-8 pb-12 pt-28 xl:px-12">
+      {/* Header */}
+      <div className="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-            Renewable infrastructure
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#0b2d73]">
+            Renewable Assets
           </p>
 
-          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em]">
+          <h1 className="text-4xl font-semibold tracking-tight text-[#202722]">
             Assets
           </h1>
 
-          <p className="mt-3 max-w-xl text-sm leading-6 text-[#738078]">
-            Add and manage the solar and wind assets connected to your farms.
+          <p className="mt-3 max-w-2xl text-base text-[#728078]">
+            Manage your solar and wind assets and keep track of their
+            operational details.
           </p>
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
-          className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#001e61] px-5 text-[13px] font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#00184f]"
+          onClick={openModal}
+          disabled={farms.length === 0}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[#062b78] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#08245f] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <Plus size={17} strokeWidth={1.9} />
+          <Plus size={18} />
           Add Asset
         </button>
       </div>
 
-      <div className="mt-10 grid gap-6 lg:grid-cols-2">
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-7">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8EDF7] text-[#001e61]">
-              <Cpu size={20} strokeWidth={1.8} />
-            </div>
-
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#89968E]">
-                Solar
-              </p>
-
-              <h2 className="mt-1 text-lg font-semibold">
-                Solar Assets
-              </h2>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-dashed border-[#E4E9E1] px-5 py-8 text-center">
-            <p className="text-sm font-medium text-[#202722]">
-              No solar assets
-            </p>
-
-            <p className="mt-2 text-xs leading-5 text-[#738078]">
-              Add an asset to prepare it for monitoring and AI-assisted
-              analysis.
-            </p>
-          </div>
+      {/* Error */}
+      {error && !isModalOpen && (
+        <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+          {error}
         </div>
+      )}
 
-        <div className="rounded-3xl border border-[#E4E9E1] bg-white p-7">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E3F1F6] text-[#2387AE]">
-              <Cpu size={20} strokeWidth={1.8} />
-            </div>
+      {/* No farms */}
+      {!loading && farms.length === 0 && (
+        <div className="rounded-3xl border border-[#e0e6df] bg-white p-10 text-center shadow-sm">
+          <h2 className="text-xl font-semibold text-[#202722]">
+            Create a farm first
+          </h2>
 
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#89968E]">
-                Wind
-              </p>
-
-              <h2 className="mt-1 text-lg font-semibold">
-                Wind Assets
-              </h2>
-            </div>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-dashed border-[#E4E9E1] px-5 py-8 text-center">
-            <p className="text-sm font-medium text-[#202722]">
-              No wind assets
-            </p>
-
-            <p className="mt-2 text-xs leading-5 text-[#738078]">
-              Add an asset to prepare it for monitoring and AI-assisted
-              analysis.
-            </p>
-          </div>
+          <p className="mt-2 text-[#728078]">
+            You need at least one farm before adding an asset.
+          </p>
         </div>
-      </div>
+      )}
 
-      {showModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#001e61]/20 px-5 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-3xl border border-[#E4E9E1] bg-white p-7 shadow-[0_24px_70px_rgba(0,30,97,0.16)]">
-            <div className="flex items-start justify-between gap-5">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-                  New asset
+      {/* Loading */}
+      {loading && (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3].map((item) => (
+            <div
+              key={item}
+              className="h-64 animate-pulse rounded-3xl bg-white shadow-sm"
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Assets */}
+      {!loading && assets.length > 0 && (
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {assets.map((asset) => {
+            const isSolar =
+              String(asset.asset_type).toLowerCase() === "solar";
+
+            return (
+              <div
+                key={asset.asset_id}
+                className="rounded-3xl border border-[#e0e6df] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+              >
+                <div className="mb-6 flex items-start justify-between">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-2xl ${
+                      isSolar ? "bg-amber-50" : "bg-blue-50"
+                    }`}
+                  >
+                    {isSolar ? (
+                      <Sun
+                        size={25}
+                        className="text-amber-500"
+                      />
+                    ) : (
+                      <Wind
+                        size={25}
+                        className="text-blue-600"
+                      />
+                    )}
+                  </div>
+
+                  <span className="rounded-full bg-[#f1f5ef] px-3 py-1.5 text-xs font-semibold capitalize text-[#536158]">
+                    {asset.asset_type}
+                  </span>
+                </div>
+
+                <h2 className="text-xl font-semibold text-[#202722]">
+                  {asset.asset_label}
+                </h2>
+
+                <p className="mt-1 text-sm text-[#7a857e]">
+                  {getFarmName(asset.farm_id)}
                 </p>
 
-                <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em]">
+                <div className="mt-6 space-y-3 border-t border-[#edf0ec] pt-5">
+                  <div className="flex items-center gap-3 text-sm text-[#68736c]">
+                    <MapPin size={17} />
+                    <span>{asset.location || "Location not specified"}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-sm text-[#68736c]">
+                    <CalendarDays size={17} />
+                    <span>
+                      Installed: {formatDate(asset.installation_date)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-sm text-[#7a857e]">
+                      Capacity
+                    </span>
+
+                    <span className="font-semibold text-[#202722]">
+                      {asset.capacity ?? "—"} MW
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Empty assets */}
+      {!loading && farms.length > 0 && assets.length === 0 && (
+        <div className="rounded-3xl border border-dashed border-[#ccd5cc] bg-white p-12 text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f1f5ef]">
+            <Wind size={28} className="text-[#0b2d73]" />
+          </div>
+
+          <h2 className="mt-5 text-xl font-semibold text-[#202722]">
+            No assets yet
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-md text-sm text-[#728078]">
+            Add your first solar panel or wind turbine to start monitoring
+            its health.
+          </p>
+
+          <button
+            onClick={openModal}
+            className="mt-6 rounded-full bg-[#062b78] px-6 py-3 text-sm font-semibold text-white"
+          >
+            Add Your First Asset
+          </button>
+        </div>
+      )}
+
+      {/* Add Asset Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/35 px-4 backdrop-blur-sm">
+          <div className="max-h-[95vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-8 shadow-2xl md:p-10">
+            <div className="mb-8 flex items-start justify-between">
+              <div>
+                <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#0b2d73]">
+                  New Asset
+                </p>
+
+                <h2 className="text-3xl font-semibold text-[#202722]">
                   Add Asset
                 </h2>
 
-                <p className="mt-2 text-xs leading-5 text-[#738078]">
+                <p className="mt-2 text-sm text-[#728078]">
                   Add the basic details of a renewable energy asset.
                 </p>
               </div>
 
               <button
-                onClick={() => setShowModal(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full text-[#738078] transition hover:bg-[#F0F3F9] hover:text-[#001e61]"
-                aria-label="Close"
+                onClick={closeModal}
+                className="rounded-full p-2 text-[#718078] transition hover:bg-[#f1f4f0] hover:text-[#202722]"
               >
-                <X size={18} strokeWidth={1.8} />
+                <X size={24} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-7 space-y-5">
+            {error && (
+              <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Farm */}
               <div>
-                <label
-                  htmlFor="assetLabel"
-                  className="mb-2 block text-[11px] font-semibold"
+                <label className="mb-2 block text-sm font-semibold text-[#303832]">
+                  Farm
+                </label>
+
+                <select
+                  name="farmId"
+                  value={form.farmId}
+                  onChange={handleChange}
+                  className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base text-[#303832] outline-none transition focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
+                  required
                 >
+                  <option value="">Select a farm</option>
+
+                  {farms.map((farm) => (
+                    <option
+                      key={farm.farm_id}
+                      value={farm.farm_id}
+                    >
+                      {farm.farm_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Asset label */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#303832]">
                   Asset label
                 </label>
 
                 <input
-                  id="assetLabel"
+                  type="text"
                   name="assetLabel"
                   value={form.assetLabel}
                   onChange={handleChange}
                   placeholder="e.g. Inverter A-01"
-                  className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                  className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base text-[#303832] outline-none transition placeholder:text-[#a0a8a2] focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
                   required
                 />
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
+              {/* Type + capacity */}
+              <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="assetType"
-                    className="mb-2 block text-[11px] font-semibold"
-                  >
+                  <label className="mb-2 block text-sm font-semibold text-[#303832]">
                     Asset type
                   </label>
 
                   <select
-                    id="assetType"
                     name="assetType"
                     value={form.assetType}
                     onChange={handleChange}
-                    className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                    className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base capitalize text-[#303832] outline-none transition focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
                   >
                     <option value="solar">Solar</option>
                     <option value="wind">Wind</option>
@@ -183,78 +419,72 @@ function Assets() {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="capacity"
-                    className="mb-2 block text-[11px] font-semibold"
-                  >
+                  <label className="mb-2 block text-sm font-semibold text-[#303832]">
                     Capacity
                   </label>
 
                   <input
-                    id="capacity"
-                    name="capacity"
                     type="number"
-                    min="0"
+                    name="capacity"
                     value={form.capacity}
                     onChange={handleChange}
                     placeholder="Capacity in MW"
-                    className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                    min="0"
+                    step="0.01"
+                    className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base text-[#303832] outline-none transition placeholder:text-[#a0a8a2] focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
                   />
                 </div>
               </div>
 
-              <div className="grid gap-5 sm:grid-cols-2">
+              {/* Date + location */}
+              <div className="grid gap-5 md:grid-cols-2">
                 <div>
-                  <label
-                    htmlFor="installationDate"
-                    className="mb-2 block text-[11px] font-semibold"
-                  >
+                  <label className="mb-2 block text-sm font-semibold text-[#303832]">
                     Installation date
                   </label>
 
                   <input
-                    id="installationDate"
-                    name="installationDate"
                     type="date"
+                    name="installationDate"
                     value={form.installationDate}
                     onChange={handleChange}
-                    className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                    className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base text-[#303832] outline-none transition focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
                   />
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="location"
-                    className="mb-2 block text-[11px] font-semibold"
-                  >
+                  <label className="mb-2 block text-sm font-semibold text-[#303832]">
                     Location
                   </label>
 
                   <input
-                    id="location"
+                    type="text"
                     name="location"
                     value={form.location}
                     onChange={handleChange}
                     placeholder="Asset location"
-                    className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                    className="w-full rounded-2xl border border-[#dce3dc] bg-[#fbfcfa] px-4 py-4 text-base text-[#303832] outline-none transition placeholder:text-[#a0a8a2] focus:border-[#0b2d73] focus:ring-2 focus:ring-[#0b2d73]/10"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
+              {/* Buttons */}
+              <div className="flex justify-end gap-4 pt-4">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
-                  className="h-11 rounded-full border border-[#E4E9E1] px-5 text-[12px] font-semibold text-[#738078] transition hover:bg-[#F0F3F9]"
+                  onClick={closeModal}
+                  disabled={saving}
+                  className="rounded-full border border-[#dce3dc] px-7 py-3.5 text-sm font-semibold text-[#68736c] transition hover:bg-[#f5f7f4] disabled:opacity-50"
                 >
                   Cancel
                 </button>
 
                 <button
                   type="submit"
-                  className="h-11 rounded-full bg-[#001e61] px-6 text-[12px] font-semibold text-white transition hover:bg-[#00184f]"
+                  disabled={saving}
+                  className="rounded-full bg-[#062b78] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#08245f] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Add Asset
+                  {saving ? "Adding..." : "Add Asset"}
                 </button>
               </div>
             </form>

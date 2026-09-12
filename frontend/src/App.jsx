@@ -8,7 +8,9 @@ import Dashboard from "./pages/Dashboard";
 import Farms from "./pages/Farms";
 import Assets from "./pages/Assets";
 import AssetDetails from "./pages/AssetDetails";
-import Maintenance from "./pages/Maintenance";
+import AIAnalyzer from "./pages/AIAnalyzer";
+import Alerts from "./pages/Alerts";
+import Monitor from "./pages/Monitor";
 import Technicians from "./pages/Technicians";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -78,17 +80,28 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
+
         <Route path="/farms" element={<Farms />} />
+
         <Route path="/assets" element={<Assets />} />
+
         <Route path="/assets/:id" element={<AssetDetails />} />
-        <Route path="/maintenance" element={<Maintenance />} />
+
+        <Route path="/ai-analyzer" element={<AIAnalyzer />} />
+
+        <Route path="/alerts" element={<Alerts />} />
+
+        <Route path="/monitor" element={<Monitor />} />
+
         <Route path="/technicians" element={<Technicians />} />
+
         <Route path="/profile" element={<Profile />} />
+
         <Route path="/settings" element={<Settings />} />
       </Route>
 
       {/* Fallback */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

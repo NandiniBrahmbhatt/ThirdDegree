@@ -1,8 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Building2, MapPin, Plus, X } from "lucide-react";
+import { apiRequest } from "../services/api";
 
 function Farms() {
   const [showModal, setShowModal] = useState(false);
+  const [farms, setFarms] = useState([]);
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
 
   const [form, setForm] = useState({
     farmName: "",
@@ -11,6 +16,26 @@ function Farms() {
     energyType: "solar",
   });
 
+  useEffect(() => {
+    loadFarms();
+  }, []);
+
+  const loadFarms = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await apiRequest("/farms/");
+
+      setFarms(Array.isArray(response) ? response : []);
+    } catch (error) {
+      console.error("Unable to load farms:", error);
+      setError("Unable to load your farms. Please refresh and try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
 
@@ -18,13 +43,48 @@ function Farms() {
       ...current,
       [name]: value,
     }));
+
+    setError("");
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Backend integration will be added later.
-    setShowModal(false);
+    if (!form.farmName || !form.location || !form.capacity) {
+      setError("Please complete all required fields.");
+      return;
+    }
+
+    setIsCreating(true);
+    setError("");
+
+    try {
+      const response = await apiRequest("/farms/", {
+        method: "POST",
+        body: JSON.stringify({
+          farm_name: form.farmName,
+          location: form.location,
+          capacity: Number(form.capacity),
+          energy_type: form.energyType,
+        }),
+      });
+
+      setFarms((current) => [response, ...current]);
+
+      setForm({
+        farmName: "",
+        location: "",
+        capacity: "",
+        energyType: "solar",
+      });
+
+      setShowModal(false);
+    } catch (error) {
+      console.error("Farm creation failed:", error);
+      setError("Unable to create farm. Please try again.");
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -46,7 +106,10 @@ function Farms() {
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setError("");
+            setShowModal(true);
+          }}
           className="flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#001e61] px-5 text-[13px] font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#00184f]"
         >
           <Plus size={17} strokeWidth={1.9} />
@@ -54,30 +117,89 @@ function Farms() {
         </button>
       </div>
 
-      <div className="mt-10 flex min-h-[430px] items-center justify-center rounded-3xl border border-[#E4E9E1] bg-white px-6">
-        <div className="max-w-md text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8EDF7] text-[#001e61]">
-            <Building2 size={25} strokeWidth={1.7} />
-          </div>
-
-          <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">
-            No farms yet
-          </h2>
-
-          <p className="mt-3 text-sm leading-6 text-[#738078]">
-            Create your first farm to start organising renewable assets and
-            preparing them for AI-assisted monitoring.
-          </p>
-
-          <button
-            onClick={() => setShowModal(true)}
-            className="mt-6 inline-flex h-10 items-center gap-2 rounded-full border border-[#001e61] px-5 text-[12px] font-semibold text-[#001e61] transition hover:bg-[#E8EDF7]"
-          >
-            <Plus size={15} strokeWidth={1.9} />
-            Add a farm
-          </button>
+      {error && !showModal && (
+        <div className="mt-6 rounded-xl border border-[#C94B3F]/20 bg-[#C94B3F]/5 px-4 py-3">
+          <p className="text-xs font-medium text-[#C94B3F]">{error}</p>
         </div>
-      </div>
+      )}
+
+      {isLoading ? (
+        <div className="mt-10 flex min-h-[430px] items-center justify-center rounded-3xl border border-[#E4E9E1] bg-white">
+          <p className="text-sm text-[#738078]">Loading your farms...</p>
+        </div>
+      ) : farms.length === 0 ? (
+        <div className="mt-10 flex min-h-[430px] items-center justify-center rounded-3xl border border-[#E4E9E1] bg-white px-6">
+          <div className="max-w-md text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8EDF7] text-[#001e61]">
+              <Building2 size={25} strokeWidth={1.7} />
+            </div>
+
+            <h2 className="mt-5 text-xl font-semibold tracking-[-0.025em]">
+              No farms yet
+            </h2>
+
+            <p className="mt-3 text-sm leading-6 text-[#738078]">
+              Create your first farm to start organising renewable assets and
+              preparing them for AI-assisted monitoring.
+            </p>
+
+            <button
+              onClick={() => {
+                setError("");
+                setShowModal(true);
+              }}
+              className="mt-6 inline-flex h-10 items-center gap-2 rounded-full border border-[#001e61] px-5 text-[12px] font-semibold text-[#001e61] transition hover:bg-[#E8EDF7]"
+            >
+              <Plus size={15} strokeWidth={1.9} />
+              Add a farm
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="mt-10 space-y-5">
+          {farms.map((farm) => (
+            <div
+              key={farm.farm_id}
+              className="rounded-3xl border border-[#E4E9E1] bg-white p-7 shadow-[0_12px_35px_rgba(0,30,97,0.04)]"
+            >
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E8EDF7] text-[#001e61]">
+                    <Building2 size={25} strokeWidth={1.7} />
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#001e61]">
+                      Farm
+                    </p>
+
+                    <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em]">
+                      {farm.farm_name}
+                    </h2>
+
+                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-xs text-[#738078]">
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin size={14} strokeWidth={1.7} />
+                        {farm.location}
+                      </span>
+
+                      <span>Capacity: {farm.capacity}</span>
+
+                      <span className="capitalize">
+                        Type: {farm.energy_type}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="rounded-full bg-[#E8EDF7] px-4 py-2 text-[11px] font-semibold text-[#001e61]">
+                  Connected to backend
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-[#001e61]/20 px-5 backdrop-blur-sm">
@@ -98,7 +220,10 @@ function Farms() {
               </div>
 
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setError("");
+                }}
                 className="flex h-9 w-9 items-center justify-center rounded-full text-[#738078] transition hover:bg-[#F0F3F9] hover:text-[#001e61]"
                 aria-label="Close"
               >
@@ -171,6 +296,7 @@ function Farms() {
                     onChange={handleChange}
                     placeholder="Capacity in MW"
                     className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-[#FAFBF7] px-4 text-sm outline-none transition focus:border-[#001e61]"
+                    required
                   />
                 </div>
 
@@ -196,10 +322,21 @@ function Farms() {
                 </div>
               </div>
 
+              {error && (
+                <div className="rounded-xl border border-[#C94B3F]/20 bg-[#C94B3F]/5 px-4 py-3">
+                  <p className="text-xs font-medium text-[#C94B3F]">
+                    {error}
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setError("");
+                  }}
                   className="h-11 rounded-full border border-[#E4E9E1] px-5 text-[12px] font-semibold text-[#738078] transition hover:bg-[#F0F3F9]"
                 >
                   Cancel
@@ -207,9 +344,10 @@ function Farms() {
 
                 <button
                   type="submit"
-                  className="h-11 rounded-full bg-[#001e61] px-6 text-[12px] font-semibold text-white transition hover:bg-[#00184f]"
+                  disabled={isCreating}
+                  className="h-11 rounded-full bg-[#001e61] px-6 text-[12px] font-semibold text-white transition hover:bg-[#00184f] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Create Farm
+                  {isCreating ? "Creating..." : "Create Farm"}
                 </button>
               </div>
             </form>

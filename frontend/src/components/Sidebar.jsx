@@ -3,7 +3,9 @@ import {
   LayoutDashboard,
   Building2,
   Cpu,
-  Wrench,
+  BrainCircuit,
+  Bell,
+  Activity,
   Users,
   UserRound,
   Settings,
@@ -30,9 +32,19 @@ function Sidebar() {
       icon: Cpu,
     },
     {
-      label: "Maintenance",
-      path: "/maintenance",
-      icon: Wrench,
+      label: "AI Analyzer",
+      path: "/ai-analyzer",
+      icon: BrainCircuit,
+    },
+    {
+      label: "Alerts",
+      path: "/alerts",
+      icon: Bell,
+    },
+    {
+      label: "Monitor",
+      path: "/monitor",
+      icon: Activity,
     },
     {
       label: "Technicians",
@@ -85,7 +97,7 @@ function Sidebar() {
       </div>
 
       {/* Main navigation */}
-      <nav className="flex-1 px-4">
+      <nav className="flex-1 overflow-y-auto px-4">
         <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
           Workspace
         </p>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiRequest } from "../services/api";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
@@ -30,58 +31,40 @@ function Login() {
     setError("");
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    if (!form.email || !form.password) {
-      setError("Please enter your email and password.");
-      return;
-    }
+  if (!form.email || !form.password) {
+    setError("Please enter your email and password.");
+    return;
+  }
 
-    const savedUser = localStorage.getItem("renewai_user");
+  try {
+    const response = await apiRequest("/users/login", {
+      method: "POST",
+      body: JSON.stringify({
+        username_email: form.email,
+        password: form.password,
+      }),
+    });
 
-    if (savedUser) {
-      try {
-        const user = JSON.parse(savedUser);
-
-        if (
-          user.username_email &&
-          user.username_email !== form.email
-        ) {
-          setError("Invalid email or password.");
-          return;
-        }
-
-        localStorage.setItem(
-          "renewai_user",
-          JSON.stringify({
-            ...user,
-            username_email: form.email,
-          })
-        );
-
-        navigate(
-          user.role === "technician" ? "/technician" : "/dashboard"
-        );
-
-        return;
-      } catch {
-        localStorage.removeItem("renewai_user");
-      }
-    }
+    localStorage.setItem("renewai_token", response.access_token);
 
     const user = {
-      user_id: null,
       username_email: form.email,
-      full_name: "RenewAI User",
-      phone: "",
-      role: "farm_owner",
+      role: response.role,
     };
 
     localStorage.setItem("renewai_user", JSON.stringify(user));
 
-    navigate("/dashboard");
-  };
+    navigate(
+      response.role === "technician" ? "/technician" : "/dashboard"
+    );
+  } catch (error) {
+    console.error(error);
+    setError("Invalid email or password.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] text-[#202722]">

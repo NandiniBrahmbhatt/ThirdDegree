@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { apiRequest } from "../services/api";
 import { Eye, EyeOff, Leaf, UserRound, Wrench } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -29,44 +30,49 @@ function Register() {
     setError("");
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+const handleSubmit = async (event) => {
+  event.preventDefault();
 
-    if (
-      !form.fullName ||
-      !form.email ||
-      !form.phone ||
-      !form.password ||
-      !form.confirmPassword ||
-      !form.role
-    ) {
-      setError("Please complete all fields and select a role.");
-      return;
-    }
+  if (
+    !form.fullName ||
+    !form.email ||
+    !form.phone ||
+    !form.password ||
+    !form.confirmPassword ||
+    !form.role
+  ) {
+    setError("Please complete all fields and select a role.");
+    return;
+  }
 
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+  if (form.password !== form.confirmPassword) {
+    setError("Passwords do not match.");
+    return;
+  }
 
-    if (form.password.length < 6) {
-      setError("Password must contain at least 6 characters.");
-      return;
-    }
+  if (form.password.length < 6) {
+    setError("Password must contain at least 6 characters.");
+    return;
+  }
 
-    // Temporary frontend-only registration.
-    // This will be replaced with POST /auth/register later.
-    const user = {
-      fullName: form.fullName,
-      email: form.email,
-      phone: form.phone,
-      role: form.role,
-    };
-
-    localStorage.setItem("renewai_user", JSON.stringify(user));
+  try {
+    await apiRequest("/users/signup", {
+      method: "POST",
+      body: JSON.stringify({
+        username_email: form.email,
+        password: form.password,
+        full_name: form.fullName,
+        phone: form.phone,
+        role: form.role,
+      }),
+    });
 
     navigate("/");
-  };
+  } catch (error) {
+    console.error(error);
+    setError("Unable to create account. Please try again.");
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] lg:grid lg:grid-cols-[1.05fr_0.95fr]">

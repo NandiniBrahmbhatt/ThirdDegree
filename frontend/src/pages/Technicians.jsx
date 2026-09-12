@@ -1,375 +1,554 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Users,
-  Search,
-  SlidersHorizontal,
-  MapPin,
-  Wrench,
+  Award,
+  BadgeCheck,
   BriefcaseBusiness,
-  IndianRupee,
+  ChevronDown,
+  MapPin,
+  Phone,
+  Search,
+  ShieldCheck,
+  Star,
+  Wrench,
   X,
-  ArrowRight,
 } from "lucide-react";
 
+const technicians = [
+  {
+    id: 1,
+    name: "Rahul Patel",
+    location: "Surat, Gujarat",
+    experience: "5+ years",
+    rating: "4.9",
+    reviews: 42,
+    specializations: ["Solar", "Wind", "Electrical"],
+    availability: "Available",
+    bio: "Experienced renewable energy technician specializing in preventive maintenance and electrical diagnostics.",
+    phone: "+91 98765 43210",
+    initials: "RP",
+  },
+  {
+    id: 2,
+    name: "Aarav Shah",
+    location: "Ahmedabad, Gujarat",
+    experience: "7+ years",
+    rating: "4.8",
+    reviews: 58,
+    specializations: ["Solar", "Electrical"],
+    availability: "Available",
+    bio: "Solar maintenance specialist with experience in inverter diagnostics, panel inspection, and electrical systems.",
+    phone: "+91 98250 12345",
+    initials: "AS",
+  },
+  {
+    id: 3,
+    name: "Vikram Desai",
+    location: "Vadodara, Gujarat",
+    experience: "8+ years",
+    rating: "4.9",
+    reviews: 67,
+    specializations: ["Wind", "Mechanical"],
+    availability: "Busy",
+    bio: "Wind turbine maintenance professional focused on mechanical systems, vibration analysis, and preventive servicing.",
+    phone: "+91 98980 56789",
+    initials: "VD",
+  },
+  {
+    id: 4,
+    name: "Meera Joshi",
+    location: "Rajkot, Gujarat",
+    experience: "4+ years",
+    rating: "4.7",
+    reviews: 31,
+    specializations: ["Solar", "Electrical"],
+    availability: "Available",
+    bio: "Renewable energy technician specializing in solar systems, electrical troubleshooting, and routine inspections.",
+    phone: "+91 97654 32109",
+    initials: "MJ",
+  },
+];
+
 const specializationOptions = [
+  "All Specializations",
   "Solar",
   "Wind",
   "Electrical",
   "Mechanical",
-  "Inverter",
 ];
 
-function Technicians() {
-  const [search, setSearch] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
-
-  const [filters, setFilters] = useState({
-    city: "",
-    specialization: "",
-    maxCharges: "",
-  });
-
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-
-    setFilters((current) => ({
-      ...current,
-      [name]: value,
-    }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      city: "",
-      specialization: "",
-      maxCharges: "",
-    });
-  };
+function TechnicianCard({ technician, onViewProfile }) {
+  const isAvailable = technician.availability === "Available";
 
   return (
-    <div className="min-h-screen px-8 pb-12 pt-28 xl:px-12">
-
+    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-6">
       {/* Header */}
-      <section className="border-b border-[#E4E9E1] pb-9">
-
-        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-              Technician Network
-            </p>
-
-            <h1 className="mt-3 text-4xl font-semibold leading-[1.02] tracking-[-0.045em] text-[#202722] sm:text-5xl">
-              The right person
-              <br />
-              <span className="text-[#001e61]">
-                for the right repair.
-              </span>
-            </h1>
-
-            <p className="mt-5 max-w-120 text-sm leading-6 text-[#738078]">
-              Find maintenance professionals based on location,
-              specialization, experience, and charges.
-            </p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#001e61] text-sm font-bold text-white shadow-sm">
+            {technician.initials}
           </div>
 
-          <div className="flex shrink-0 items-center gap-3 self-start lg:self-auto">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="truncate text-base font-bold text-slate-900">
+                {technician.name}
+              </h3>
 
-            <button
-              onClick={() => setShowFilters(true)}
-              className="inline-flex items-center gap-2.5 rounded-full border border-[#E4E9E1] bg-white px-4 py-3 text-[12px] font-semibold text-[#202722] transition hover:border-[#001e61] hover:text-[#001e61]"
-            >
-              <SlidersHorizontal
-                size={16}
-                strokeWidth={1.8}
-              />
-              Filters
-            </button>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      {/* Search */}
-      <section className="py-7">
-
-        <div className="flex w-full items-center gap-3 rounded-2xl border border-[#E4E9E1] bg-white px-4 py-3.5 transition focus-within:border-[#001e61] focus-within:ring-2 focus-within:ring-[#E6ECF7]">
-
-          <Search
-            size={18}
-            strokeWidth={1.8}
-            className="shrink-0 text-[#738078]"
-          />
-
-          <input
-            type="text"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, city, or specialization..."
-            className="w-full bg-transparent text-sm text-[#202722] outline-none placeholder:text-[#89968E]"
-          />
-
-        </div>
-
-      </section>
-
-      {/* Empty directory */}
-      <section className="relative overflow-hidden rounded-[32px] border border-[#E4E9E1] bg-[#F0F3F9]">
-
-        <div className="pointer-events-none absolute -right-24 -top-24 h-[330px] w-[330px] rounded-full border-[55px] border-[#E6ECF7]" />
-
-        <div className="pointer-events-none absolute -bottom-40 -left-24 h-[360px] w-[360px] rounded-full border-[60px] border-[#E6ECF7]" />
-
-        <div className="relative z-10 flex min-h-[410px] items-center justify-center px-6 py-16 text-center">
-
-          <div className="max-w-120">
-
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#E6ECF7] text-[#001e61]">
-              <Users
-                size={27}
-                strokeWidth={1.6}
+              <BadgeCheck
+                size={17}
+                className="shrink-0 text-emerald-500"
               />
             </div>
 
-            <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-              Technician directory
+            <p className="mt-1 text-xs font-medium text-slate-500">
+              Renewable Energy Technician
             </p>
-
-            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-[-0.04em] text-[#202722] sm:text-4xl">
-              No technicians connected yet.
-            </h2>
-
-            <p className="mx-auto mt-4 max-w-120 text-sm leading-6 text-[#738078]">
-              Technician profiles will appear here once the technician
-              network is connected to the backend.
-            </p>
-
           </div>
         </div>
-      </section>
 
-      {/* Matching factors */}
-      <section className="grid gap-6 py-10 md:grid-cols-3">
+        <span
+          className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold ${
+            isAvailable
+              ? "bg-emerald-50 text-emerald-700"
+              : "bg-amber-50 text-amber-700"
+          }`}
+        >
+          {technician.availability}
+        </span>
+      </div>
 
-        <div className="border-t border-[#E4E9E1] pt-5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E6ECF7] text-[#001e61]">
-            <MapPin
-              size={18}
-              strokeWidth={1.7}
-            />
-          </div>
-
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#001e61]">
-            01
-          </p>
-
-          <h3 className="mt-2 text-lg font-semibold text-[#202722]">
-            Location
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-[#738078]">
-            Find technicians who can conveniently reach the farm or
-            asset requiring attention.
-          </p>
+      {/* Details */}
+      <div className="mt-5 space-y-3">
+        <div className="flex items-center gap-2.5 text-sm text-slate-600">
+          <MapPin size={16} className="shrink-0 text-slate-400" />
+          <span>{technician.location}</span>
         </div>
 
-        <div className="border-t border-[#E4E9E1] pt-5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E3F1F6] text-[#2387AE]">
-            <Wrench
-              size={18}
-              strokeWidth={1.7}
-            />
-          </div>
-
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#001e61]">
-            02
-          </p>
-
-          <h3 className="mt-2 text-lg font-semibold text-[#202722]">
-            Specialization
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-[#738078]">
-            Match the maintenance requirement with the technician's
-            relevant technical expertise.
-          </p>
+        <div className="flex items-center gap-2.5 text-sm text-slate-600">
+          <BriefcaseBusiness
+            size={16}
+            className="shrink-0 text-slate-400"
+          />
+          <span>{technician.experience} experience</span>
         </div>
 
-        <div className="border-t border-[#E4E9E1] pt-5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F5B83D]/15 text-[#D68B23]">
-            <BriefcaseBusiness
-              size={18}
-              strokeWidth={1.7}
-            />
-          </div>
-
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#001e61]">
-            03
-          </p>
-
-          <h3 className="mt-2 text-lg font-semibold text-[#202722]">
-            Experience & charges
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-[#738078]">
-            Compare technician experience and expected charges when
-            selecting the right person for the job.
-          </p>
+        <div className="flex items-center gap-2.5 text-sm text-slate-600">
+          <Star
+            size={16}
+            className="shrink-0 fill-amber-400 text-amber-400"
+          />
+          <span>
+            <strong className="text-slate-800">
+              {technician.rating}
+            </strong>{" "}
+            ({technician.reviews} reviews)
+          </span>
         </div>
+      </div>
 
-      </section>
+      {/* Specializations */}
+      <div className="mt-5 flex flex-wrap gap-2">
+        {technician.specializations.map((specialization) => (
+          <span
+            key={specialization}
+            className="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-semibold text-slate-600"
+          >
+            {specialization}
+          </span>
+        ))}
+      </div>
 
-      {/* Filters modal */}
-      {showFilters && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#202722]/30 px-5 py-8 backdrop-blur-sm">
+      {/* Action */}
+      <button
+        type="button"
+        onClick={() => onViewProfile(technician)}
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-[#001e61] transition hover:border-[#001e61] hover:bg-slate-50"
+      >
+        View Profile
+      </button>
+    </article>
+  );
+}
 
-          <div className="w-full max-w-150 rounded-[30px] bg-[#FAFBF7] p-6 shadow-2xl sm:p-8">
+function TechnicianProfile({ technician, onClose }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-white shadow-2xl">
+        {/* Profile Header */}
+        <div className="relative overflow-hidden rounded-t-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-[#001e61] p-6 text-white sm:p-8">
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            aria-label="Close profile"
+          >
+            <X size={18} />
+          </button>
 
-            {/* Modal header */}
-            <div className="flex items-start justify-between gap-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-lg font-bold text-[#001e61] shadow-lg">
+              {technician.initials}
+            </div>
 
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#001e61]">
-                  Directory filters
-                </p>
-
-                <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#202722]">
-                  Find the right match
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-2xl font-bold">
+                  {technician.name}
                 </h2>
 
-                <p className="mt-3 max-w-120 text-sm leading-6 text-[#738078]">
-                  Narrow the technician directory using the information
-                  available in technician profiles.
-                </p>
-              </div>
-
-              <button
-                onClick={() => setShowFilters(false)}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F0F3F9] text-[#738078] transition hover:bg-[#E6ECF7] hover:text-[#001e61]"
-                aria-label="Close"
-              >
-                <X
-                  size={17}
-                  strokeWidth={1.8}
+                <BadgeCheck
+                  size={20}
+                  className="text-emerald-300"
                 />
-              </button>
-
-            </div>
-
-            {/* Fields */}
-            <div className="mt-8 space-y-6">
-
-              {/* City */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                  City
-                </label>
-
-                <div className="relative">
-                  <MapPin
-                    size={17}
-                    strokeWidth={1.8}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#738078]"
-                  />
-
-                  <input
-                    type="text"
-                    name="city"
-                    value={filters.city}
-                    onChange={handleFilterChange}
-                    placeholder="Example: Ahmedabad"
-                    className="h-12 w-full rounded-xl border border-[#E4E9E1] bg-white pl-11 pr-4 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
-                  />
-                </div>
               </div>
 
-              {/* Specialization */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                  Specialization
-                </label>
+              <p className="mt-1 text-sm text-slate-300">
+                Verified Renewable Energy Technician
+              </p>
 
-                <select
-                  name="specialization"
-                  value={filters.specialization}
-                  onChange={handleFilterChange}
-                  className="h-12 w-full rounded-xl border border-[#E4E9E1] bg-white px-4 text-sm text-[#202722] outline-none transition focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
-                >
-                  <option value="">
-                    Any specialization
-                  </option>
+              <div className="mt-3 flex flex-wrap gap-3 text-xs text-slate-300">
+                <span className="flex items-center gap-1.5">
+                  <MapPin size={13} />
+                  {technician.location}
+                </span>
 
-                  {specializationOptions.map((option) => (
-                    <option
-                      key={option}
-                      value={option}
-                    >
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Charges */}
-              <div>
-                <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                  Maximum Charges
-                </label>
-
-                <div className="relative">
-                  <IndianRupee
-                    size={16}
-                    strokeWidth={1.8}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#738078]"
+                <span className="flex items-center gap-1.5">
+                  <Star
+                    size={13}
+                    className="fill-amber-400 text-amber-400"
                   />
-
-                  <input
-                    type="number"
-                    name="maxCharges"
-                    value={filters.maxCharges}
-                    onChange={handleFilterChange}
-                    min="0"
-                    placeholder="Enter maximum charges"
-                    className="h-12 w-full rounded-xl border border-[#E4E9E1] bg-white pl-10 pr-4 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
-                  />
-                </div>
+                  {technician.rating}
+                </span>
               </div>
-
             </div>
-
-            {/* Actions */}
-            <div className="mt-8 flex items-center justify-between gap-4 border-t border-[#E4E9E1] pt-6">
-
-              <button
-                onClick={clearFilters}
-                className="rounded-full px-5 py-3 text-[13px] font-semibold text-[#738078] transition hover:bg-[#F0F3F9]"
-              >
-                Clear filters
-              </button>
-
-              <button
-                onClick={() => setShowFilters(false)}
-                className="group inline-flex items-center gap-3 rounded-full bg-[#001e61] px-5 py-3 text-[13px] font-semibold text-white transition hover:bg-[#001e61]/90"
-              >
-                Apply filters
-
-                <ArrowRight
-                  size={15}
-                  strokeWidth={1.8}
-                  className="transition-transform duration-200 group-hover:translate-x-1"
-                />
-              </button>
-
-            </div>
-
           </div>
         </div>
-      )}
 
+        {/* Profile Body */}
+        <div className="space-y-6 p-6 sm:p-8">
+          {/* About */}
+          <section>
+            <div className="mb-3 flex items-center gap-2">
+              <ShieldCheck size={18} className="text-emerald-600" />
+              <h3 className="font-bold text-slate-900">
+                About
+              </h3>
+            </div>
+
+            <p className="text-sm leading-6 text-slate-600">
+              {technician.bio}
+            </p>
+          </section>
+
+          {/* Experience */}
+          <section className="grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="flex items-center gap-2 text-slate-400">
+                <BriefcaseBusiness size={17} />
+                <span className="text-xs font-semibold">
+                  Experience
+                </span>
+              </div>
+
+              <p className="mt-2 text-lg font-bold text-slate-900">
+                {technician.experience}
+              </p>
+            </div>
+
+            <div className="rounded-2xl bg-slate-50 p-4">
+              <div className="flex items-center gap-2 text-slate-400">
+                <Award size={17} />
+                <span className="text-xs font-semibold">
+                  Rating
+                </span>
+              </div>
+
+              <p className="mt-2 text-lg font-bold text-slate-900">
+                {technician.rating}
+                <span className="ml-1 text-xs font-medium text-slate-400">
+                  / 5
+                </span>
+              </p>
+            </div>
+          </section>
+
+          {/* Specializations */}
+          <section>
+            <div className="mb-3 flex items-center gap-2">
+              <Wrench size={18} className="text-emerald-600" />
+              <h3 className="font-bold text-slate-900">
+                Specializations
+              </h3>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {technician.specializations.map((specialization) => (
+                <span
+                  key={specialization}
+                  className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700"
+                >
+                  {specialization}
+                </span>
+              ))}
+            </div>
+          </section>
+
+          {/* Contact */}
+          <section className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-5">
+            <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
+              Contact Technician
+            </p>
+
+            <p className="mt-2 text-sm text-slate-600">
+              Contact this technician directly for maintenance
+              assistance.
+            </p>
+
+            <a
+              href={`tel:${technician.phone}`}
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-emerald-700 sm:w-auto"
+            >
+              <Phone size={17} />
+              Contact Technician
+            </a>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
 
-export default Technicians;
+export default function Technicians() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationQuery, setLocationQuery] = useState("");
+  const [specialization, setSpecialization] = useState(
+    "All Specializations"
+  );
+  const [selectedTechnician, setSelectedTechnician] = useState(null);
+
+  const filteredTechnicians = useMemo(() => {
+    const search = searchQuery.trim().toLowerCase();
+    const location = locationQuery.trim().toLowerCase();
+
+    return technicians.filter((technician) => {
+      const matchesSearch =
+        !search ||
+        technician.name.toLowerCase().includes(search) ||
+        technician.specializations.some((item) =>
+          item.toLowerCase().includes(search)
+        );
+
+      const matchesLocation =
+        !location ||
+        technician.location.toLowerCase().includes(location);
+
+      const matchesSpecialization =
+        specialization === "All Specializations" ||
+        technician.specializations.includes(specialization);
+
+      return (
+        matchesSearch &&
+        matchesLocation &&
+        matchesSpecialization
+      );
+    });
+  }, [searchQuery, locationQuery, specialization]);
+
+  return (
+    <div className="min-h-full bg-[#FAFBF7] px-4 pb-10 pt-24 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Header */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-slate-900 to-[#001e61] p-6 text-white shadow-xl sm:p-8">
+          <div className="absolute -right-20 -top-24 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl" />
+          <div className="absolute -bottom-28 left-1/3 h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+
+          <div className="relative max-w-2xl">
+            <div className="mb-3 flex items-center gap-2 text-emerald-300">
+              <Wrench size={18} />
+              <span className="text-xs font-bold uppercase tracking-[0.15em]">
+                Maintenance Network
+              </span>
+            </div>
+
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Find a Technician
+            </h1>
+
+            <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
+              Connect with qualified technicians who can help
+              maintain your renewable energy assets.
+            </p>
+          </div>
+        </section>
+
+        {/* Search & Filters */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr_1fr]">
+            {/* Search */}
+            <div>
+              <label
+                htmlFor="technician-search"
+                className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-400"
+              >
+                Search
+              </label>
+
+              <div className="relative">
+                <Search
+                  size={17}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  id="technician-search"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(event) =>
+                    setSearchQuery(event.target.value)
+                  }
+                  placeholder="Search by name or skill..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                />
+              </div>
+            </div>
+
+            {/* Location */}
+            <div>
+              <label
+                htmlFor="technician-location"
+                className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-400"
+              >
+                Location
+              </label>
+
+              <div className="relative">
+                <MapPin
+                  size={17}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+
+                <input
+                  id="technician-location"
+                  type="text"
+                  value={locationQuery}
+                  onChange={(event) =>
+                    setLocationQuery(event.target.value)
+                  }
+                  placeholder="Search city..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                />
+              </div>
+            </div>
+
+            {/* Specialization */}
+            <div>
+              <label
+                htmlFor="specialization"
+                className="mb-2 block text-xs font-bold uppercase tracking-wide text-slate-400"
+              >
+                Specialization
+              </label>
+
+              <div className="relative">
+                <select
+                  id="specialization"
+                  value={specialization}
+                  onChange={(event) =>
+                    setSpecialization(event.target.value)
+                  }
+                  className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-11 text-sm font-medium text-slate-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                >
+                  {specializationOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+
+                <ChevronDown
+                  size={17}
+                  className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Results heading */}
+        <section>
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+                Technician Directory
+              </p>
+
+              <h2 className="mt-1 text-xl font-bold text-slate-900">
+                Available Professionals
+              </h2>
+            </div>
+
+            <p className="text-xs text-slate-500">
+              {filteredTechnicians.length} technician
+              {filteredTechnicians.length !== 1 ? "s" : ""} found
+            </p>
+          </div>
+
+          {filteredTechnicians.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {filteredTechnicians.map((technician) => (
+                <TechnicianCard
+                  key={technician.id}
+                  technician={technician}
+                  onViewProfile={setSelectedTechnician}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
+                <Search size={24} className="text-slate-400" />
+              </div>
+
+              <h3 className="mt-4 font-bold text-slate-900">
+                No technicians found
+              </h3>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Try a different name, city, or specialization.
+              </p>
+            </div>
+          )}
+        </section>
+
+        {/* Trust section */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <ShieldCheck size={23} />
+            </div>
+
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">
+                Connect with trusted professionals
+              </h3>
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+                Technician profiles help you find the right
+                expertise for solar, wind, electrical, and
+                mechanical maintenance.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Profile Modal */}
+      {selectedTechnician && (
+        <TechnicianProfile
+          technician={selectedTechnician}
+          onClose={() => setSelectedTechnician(null)}
+        />
+      )}
+    </div>
+  );
+}

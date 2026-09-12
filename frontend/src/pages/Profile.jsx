@@ -8,12 +8,31 @@ import {
 import { Link } from "react-router-dom";
 
 function Profile() {
-  const displayName = "Technician";
-  const email = "Not connected";
-  const phone = "Not connected";
+  const savedUser = localStorage.getItem("renewai_user");
 
-  const roleLabel = "Technician";
-  const databaseRole = "technician";
+  let user = null;
+
+  try {
+    user = savedUser ? JSON.parse(savedUser) : null;
+  } catch (error) {
+    console.error("Unable to read saved user:", error);
+  }
+
+  const email = user?.username_email || "Not connected";
+  const databaseRole = user?.role || "unknown";
+
+  const roleLabel =
+    databaseRole === "farm_owner"
+      ? "Farm Owner"
+      : databaseRole === "technician"
+        ? "Technician"
+        : databaseRole;
+
+  const displayName =
+    user?.full_name ||
+    (databaseRole === "farm_owner" ? "Farm Owner" : "User");
+
+  const phone = user?.phone || "Not connected";
 
   return (
     <div className="min-h-screen px-8 pb-12 pt-28 xl:px-12">
@@ -129,7 +148,7 @@ function Profile() {
                 </p>
 
                 <p className="mt-1 text-sm font-medium text-[#202722]">
-                  Backend authentication pending
+                  Authenticated
                 </p>
               </div>
             </div>
@@ -167,8 +186,11 @@ function Profile() {
 
           <div className="mt-4 rounded-2xl bg-[#E6ECF7] p-4">
             <p className="text-xs leading-5 text-[#40544C]">
-              Technician accounts can receive, inspect, verify, and complete
-              maintenance work.
+              {databaseRole === "farm_owner"
+                ? "Farm Owner accounts can create farms, manage renewable assets, and use AI-assisted monitoring."
+                : databaseRole === "technician"
+                  ? "Technician accounts can manage their technician profile and support maintenance activities."
+                  : "Your account role determines which workspace and features are available to you."}
             </p>
           </div>
         </div>
@@ -181,12 +203,12 @@ function Profile() {
         </p>
 
         <h2 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-[#202722]">
-          Profile data will come from the users table.
+          Account authentication is connected.
         </h2>
 
         <p className="mt-3 max-w-150 text-sm leading-6 text-[#738078]">
-          Once authentication is connected, RenewAI will load the logged-in
-          user's name, email, phone number, and role directly from the backend.
+          Your authenticated account information is being read from the
+          current RenewAI login session.
         </p>
       </section>
     </div>
