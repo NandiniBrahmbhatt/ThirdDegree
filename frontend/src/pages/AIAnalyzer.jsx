@@ -94,6 +94,19 @@ function formatDateTime(value) {
 }
 
 
+function formatCurrency(value) {
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return "₹0";
+  }
+
+  return `₹${number.toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+
 function AIAnalyzer() {
   const [assets, setAssets] = useState([]);
   const [farms, setFarms] = useState([]);
@@ -958,6 +971,132 @@ function AIAnalyzer() {
 
           </div>
 
+
+
+          {/* =================================================
+              ENERGY + REVENUE IMPACT
+          ================================================= */}
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+            {/* Energy Impact */}
+            <div className="rounded-[28px] border border-[#E4E9E1] bg-white p-7 shadow-[0_12px_40px_rgba(32,39,34,0.04)] sm:p-8">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E7F6EF] text-[#00A878]">
+                  <Zap size={18} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#14845A]">
+                    Energy Impact
+                  </p>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[#202722]">
+                    Estimated Energy Loss
+                  </h3>
+                </div>
+              </div>
+
+              <div className="mt-7 rounded-2xl bg-[#F7F9F6] p-5">
+                <p className="text-3xl font-semibold tracking-[-0.04em] text-[#14845A]">
+                  {Number.isFinite(Number(analysis.energy_loss_estimate))
+                    ? Number(analysis.energy_loss_estimate).toLocaleString("en-IN", {
+                        maximumFractionDigits: 2,
+                      })
+                    : "0"}{" "}
+                  <span className="text-base font-medium text-[#738078]">
+                    kWh/day
+                  </span>
+                </p>
+
+                <p className="mt-2 text-xs leading-5 text-[#89968E]">
+                  Estimated generation lost under the current operating conditions.
+                </p>
+              </div>
+            </div>
+
+            {/* Revenue Impact */}
+            <div className="rounded-[28px] border border-[#E4E9E1] bg-white p-7 shadow-[0_12px_40px_rgba(32,39,34,0.04)] sm:p-8">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFF4D6] text-[#9A6B00]">
+                  <Activity size={18} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#9A6B00]">
+                    Revenue Impact
+                  </p>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[#202722]">
+                    Estimated Revenue Loss
+                  </h3>
+                </div>
+              </div>
+
+              <div className="mt-7 rounded-2xl bg-[#FFF9EA] p-5">
+                <p className="text-3xl font-semibold tracking-[-0.04em] text-[#9A6B00]">
+                  {formatCurrency(analysis.revenue_loss_estimate)}
+                  <span className="ml-1 text-base font-medium text-[#738078]">
+                    /day
+                  </span>
+                </p>
+
+                <p className="mt-2 text-xs leading-5 text-[#89968E]">
+                  Estimated revenue at risk if the current performance gap continues.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* =================================================
+              COST OF WAITING
+          ================================================= */}
+          <div className="rounded-[28px] border border-[#E4E9E1] bg-white p-7 shadow-[0_12px_40px_rgba(32,39,34,0.04)] sm:p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#F0F3F9] text-[#001e61]">
+                  <Clock3 size={18} strokeWidth={1.8} />
+                </div>
+
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#001e61]">
+                    Cost of Waiting
+                  </p>
+                  <h3 className="mt-1 text-xl font-semibold tracking-[-0.025em] text-[#202722]">
+                    Revenue at Risk if Maintenance Is Delayed
+                  </h3>
+                </div>
+              </div>
+
+              <p className="max-w-md text-xs leading-5 text-[#89968E] sm:text-right">
+                Based on the estimated daily revenue impact of the current performance gap.
+              </p>
+            </div>
+
+            <div className="mt-7 grid gap-4 sm:grid-cols-3">
+              {[1, 3, 7].map((days) => {
+                const dailyRevenueLoss = Number(analysis.revenue_loss_estimate);
+                const revenueAtRisk = Number.isFinite(dailyRevenueLoss)
+                  ? dailyRevenueLoss * days
+                  : 0;
+
+                return (
+                  <div
+                    key={days}
+                    className="rounded-2xl border border-[#E0E6DE] bg-[#F7F9F6] p-5"
+                  >
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#89968E]">
+                      After {days} {days === 1 ? "Day" : "Days"}
+                    </p>
+
+                    <p className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#C94B3F]">
+                      {formatCurrency(revenueAtRisk)}
+                    </p>
+
+                    <p className="mt-1 text-xs text-[#89968E]">
+                      estimated revenue at risk
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
           {/* =================================================
               ASSET CONTEXT

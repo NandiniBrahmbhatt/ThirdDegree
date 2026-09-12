@@ -110,6 +110,12 @@ class AIAnalysisOut(BaseModel):
     contributing_factors: Optional[str]
     recommended_action: Optional[str]
 
+    # Estimated financial impact.
+    # Energy loss: kWh/day
+    # Revenue loss: INR/day
+    energy_loss_estimate: Optional[float]
+    revenue_loss_estimate: Optional[float]
+
     class Config:
         from_attributes = True
 
