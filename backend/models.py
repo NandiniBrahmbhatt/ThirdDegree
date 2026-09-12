@@ -142,7 +142,6 @@ class TechnicianProfile(Base):
     )
 
     user = relationship("User", back_populates="technician_profile")
-    jobs = relationship("MaintenanceJob", back_populates="technician")
 
 
 class MaintenanceJob(Base):

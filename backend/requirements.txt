@@ -8,5 +8,6 @@ passlib[bcrypt]>=1.7,<2.0
 email-validator>=2.0,<3.0
 numpy
 pandas
-scikit-learn
+scikit-learn==1.6.1
 joblib
+bcrypt==4.0.1
