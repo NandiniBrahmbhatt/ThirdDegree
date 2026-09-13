@@ -7,12 +7,11 @@ import {
   ShieldCheck,
   UserRound,
   AlertTriangle,
-  Wrench,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../hooks/useLanguage";
 
-function Settings() {
+function SettingsGujarati() {
   const navigate = useNavigate();
   const { language, toggleLanguage } = useLanguage();
 
@@ -20,36 +19,16 @@ function Settings() {
   const [riskAlerts, setRiskAlerts] = useState(true);
   const [sensorAlerts, setSensorAlerts] = useState(true);
   const [showPasswordMessage, setShowPasswordMessage] = useState(false);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] =
+    useState(false);
 
-  // Get logged-in user
-  const savedUser = localStorage.getItem("renewai_user");
-
-  let user = null;
-
-  try {
-    user = savedUser ? JSON.parse(savedUser) : null;
-  } catch {
-    user = null;
-  }
-
-  const isTechnician = user?.role === "technician";
-  const isGujarati = language === "gu";
-
-  const roleLabel = isTechnician
-    ? isGujarati
-      ? "ટેકનિશિયન"
-      : "Technician"
-    : isGujarati
-      ? "ફાર્મ માલિક"
-      : "Farm Owner";
-
-  const databaseRole = isTechnician ? "technician" : "farm_owner";
+  const roleLabel = "ફાર્મ માલિક";
+  const databaseRole = "farm_owner";
 
   const handleLogout = () => {
     localStorage.removeItem("renewai_user");
     localStorage.removeItem("renewai_token");
-    navigate("/");
+    navigate("/gu/login");
   };
 
   const handleChangePassword = () => {
@@ -60,67 +39,52 @@ function Settings() {
     }, 3000);
   };
 
-  const handleLanguageChange = () => {
-    toggleLanguage();
-  };
-
   return (
     <div className="min-h-screen bg-[#FAFBF7] px-8 pb-12 pt-28 xl:px-12">
       <div className="mx-auto max-w-7xl">
-
         {/* Header */}
         <section className="border-b border-[#E4E9E1] pb-9">
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#E6ECF7] text-[#001e61]">
-              {isTechnician ? (
-                <Wrench size={25} strokeWidth={1.7} />
-              ) : (
-                <ShieldCheck size={25} strokeWidth={1.7} />
-              )}
+              <ShieldCheck size={25} strokeWidth={1.7} />
             </div>
 
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#001e61]">
-                {isGujarati ? "પસંદગીઓ" : "Preferences"}
+                પસંદગીઓ
               </p>
 
               <h1 className="mt-1 text-3xl font-semibold tracking-[-0.04em] text-[#202722] sm:text-4xl">
-                {isGujarati ? "સેટિંગ્સ" : "Settings"}
+                સેટિંગ્સ
               </h1>
             </div>
           </div>
 
           <p className="mt-5 max-w-2xl text-sm leading-6 text-[#738078]">
-            {isGujarati
-              ? "તમારી RenewAI પસંદગીઓ, સૂચનાઓ, ભાષા અને એકાઉન્ટ સેટિંગ્સ મેનેજ કરો."
-              : "Manage your RenewAI preferences, notifications, language, and account settings."}
+            તમારી RenewAI પસંદગીઓ, નોટિફિકેશન્સ, ભાષા અને એકાઉન્ટ સેટિંગ્સ
+            મેનેજ કરો.
           </p>
         </section>
 
         <section className="grid gap-6 py-8 lg:grid-cols-[1.2fr_0.8fr]">
-
           {/* Preferences */}
           <div className="rounded-[28px] border border-[#E4E9E1] bg-white p-6 sm:p-8">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#001e61]">
-                {isGujarati ? "એપ્લિકેશન" : "Application"}
+                એપ્લિકેશન
               </p>
 
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-[#202722]">
-                {isGujarati
-                  ? "વર્કસ્પેસ પસંદગીઓ"
-                  : "Workspace preferences"}
+                વર્કસ્પેસ પસંદગીઓ
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-[#738078]">
-                {isGujarati
-                  ? "RenewAI મહત્વપૂર્ણ માહિતી તમારી સાથે કેવી રીતે શેર કરે છે તે કસ્ટમાઇઝ કરો."
-                  : "Customize how RenewAI communicates important information to you."}
+                RenewAI તમારા સુધી મહત્વપૂર્ણ માહિતી કેવી રીતે પહોંચાડે તે
+                કસ્ટમાઇઝ કરો.
               </p>
             </div>
 
             <div className="mt-8 space-y-5">
-
               {/* Language */}
               <div className="flex items-center justify-between gap-6 border-b border-[#E4E9E1] pb-5">
                 <div className="flex items-start gap-4">
@@ -130,24 +94,14 @@ function Settings() {
 
                   <div>
                     <p className="text-sm font-semibold text-[#202722]">
-                      {isGujarati ? "ભાષા" : "Language"}
+                      ભાષા
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-[#89968E]">
-                      {isGujarati
-                        ? "અંગ્રેજી અને ગુજરાતી વચ્ચે બદલો."
-                        : "Switch between English and Gujarati."}
+                      અંગ્રેજી અને ગુજરાતી વચ્ચે બદલો.
                     </p>
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleLanguageChange}
-                  className="rounded-xl border border-[#E4E9E1] bg-white px-4 py-2 text-xs font-semibold text-[#001e61] transition hover:border-[#001e61]"
-                >
-                  {isGujarati ? "English" : "ગુજરાતી"}
-                </button>
               </div>
 
               {/* Email notifications */}
@@ -159,15 +113,11 @@ function Settings() {
 
                   <div>
                     <p className="text-sm font-semibold text-[#202722]">
-                      {isGujarati
-                        ? "ઇમેઇલ સૂચનાઓ"
-                        : "Email notifications"}
+                      ઈમેલ નોટિફિકેશન્સ
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-[#89968E]">
-                      {isGujarati
-                        ? "મહત્વપૂર્ણ પ્લેટફોર્મ અપડેટ્સ ઇમેઇલ દ્વારા મેળવો."
-                        : "Receive important platform updates by email."}
+                      મહત્વપૂર્ણ પ્લેટફોર્મ અપડેટ્સ ઈમેલ દ્વારા મેળવો.
                     </p>
                   </div>
                 </div>
@@ -177,7 +127,7 @@ function Settings() {
                   onClick={() =>
                     setEmailNotifications((current) => !current)
                   }
-                  label="Toggle email notifications"
+                  label="ઈમેલ નોટિફિકેશન્સ બદલો"
                 />
               </div>
 
@@ -190,15 +140,11 @@ function Settings() {
 
                   <div>
                     <p className="text-sm font-semibold text-[#202722]">
-                      {isGujarati
-                        ? "AI જોખમ ચેતવણીઓ"
-                        : "AI risk alerts"}
+                      AI જોખમ એલર્ટ્સ
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-[#89968E]">
-                      {isGujarati
-                        ? "AI જ્યારે વધેલું એસેટ જોખમ શોધે ત્યારે ચેતવણી મેળવો."
-                        : "Receive alerts when AI detects elevated asset risk."}
+                      AI એસેટમાં વધેલું જોખમ શોધે ત્યારે એલર્ટ મેળવો.
                     </p>
                   </div>
                 </div>
@@ -206,7 +152,7 @@ function Settings() {
                 <Toggle
                   enabled={riskAlerts}
                   onClick={() => setRiskAlerts((current) => !current)}
-                  label="Toggle AI risk alerts"
+                  label="AI જોખમ એલર્ટ્સ બદલો"
                 />
               </div>
 
@@ -219,15 +165,11 @@ function Settings() {
 
                   <div>
                     <p className="text-sm font-semibold text-[#202722]">
-                      {isGujarati
-                        ? "સેન્સર અસામાન્યતા ચેતવણીઓ"
-                        : "Sensor anomaly alerts"}
+                      સેન્સર અસામાન્યતા એલર્ટ્સ
                     </p>
 
                     <p className="mt-1 text-xs leading-5 text-[#89968E]">
-                      {isGujarati
-                        ? "અસામાન્ય સેન્સર પેટર્ન જોવા મળે ત્યારે સૂચના મેળવો."
-                        : "Get notified when unusual sensor patterns are detected."}
+                      અસામાન્ય સેન્સર પેટર્ન જોવા મળે ત્યારે સૂચના મેળવો.
                     </p>
                   </div>
                 </div>
@@ -235,23 +177,21 @@ function Settings() {
                 <Toggle
                   enabled={sensorAlerts}
                   onClick={() => setSensorAlerts((current) => !current)}
-                  label="Toggle sensor anomaly alerts"
+                  label="સેન્સર અસામાન્યતા એલર્ટ્સ બદલો"
                 />
               </div>
             </div>
 
             <div className="mt-7 rounded-2xl bg-[#F0F3F9] p-4">
               <p className="text-xs leading-5 text-[#738078]">
-                {isGujarati
-                  ? "સૂચના પસંદગીઓ હાલમાં frontend માં સંગ્રહિત છે."
-                  : "Notification preferences are currently stored in the frontend."}
+                નોટિફિકેશન પસંદગીઓ હાલમાં ફ્રન્ટએન્ડમાં સ્ટોર થાય છે. તમારા
+                એકાઉન્ટ સેટિંગ્સ સાથે તેનું કનેક્શન પછીથી કરવામાં આવશે.
               </p>
             </div>
           </div>
 
           {/* Account */}
           <div className="space-y-6">
-
             {/* Role */}
             <div className="rounded-[28px] border border-[#E4E9E1] bg-[#F0F3F9] p-6 sm:p-8">
               <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#E6ECF7] text-[#001e61]">
@@ -259,7 +199,7 @@ function Settings() {
               </div>
 
               <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#001e61]">
-                {isGujarati ? "એકાઉન્ટ પ્રકાર" : "Account type"}
+                એકાઉન્ટ પ્રકાર
               </p>
 
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] text-[#202722]">
@@ -267,18 +207,14 @@ function Settings() {
               </h2>
 
               <p className="mt-4 text-sm leading-6 text-[#738078]">
-                {isTechnician
-                  ? isGujarati
-                    ? "તમારું ટેકનિશિયન એકાઉન્ટ મેન્ટેનન્સ, ટેકનિકલ માર્ગદર્શન અને RenewAI પ્લેટફોર્મ સુવિધાઓની ઍક્સેસ આપે છે."
-                    : "Your Technician account gives you access to maintenance resources, technical guidance, and RenewAI platform features."
-                  : isGujarati
-                    ? "તમારું ફાર્મ માલિક એકાઉન્ટ તમને ફાર્મ મેનેજમેન્ટ, એસેટ મોનિટરિંગ, AI વિશ્લેષણ અને ટેકનિશિયન શોધવાની સુવિધા આપે છે."
-                    : "Your Farm Owner account gives you access to farm management, asset monitoring, AI analysis, alerts, and technician discovery."}
+                તમારું ફાર્મ માલિક એકાઉન્ટ તમને ફાર્મ મેનેજમેન્ટ, એસેટ
+                મોનિટરિંગ, AI વિશ્લેષણ, એલર્ટ્સ અને ટેકનિશિયન શોધની સુવિધા
+                આપે છે.
               </p>
 
               <div className="mt-6 rounded-2xl border border-[#E4E9E1] bg-white p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#89968E]">
-                  {isGujarati ? "એકાઉન્ટ ભૂમિકા" : "Account role"}
+                  એકાઉન્ટ ભૂમિકા
                 </p>
 
                 <p className="mt-2 text-sm font-semibold text-[#001e61]">
@@ -288,14 +224,14 @@ function Settings() {
 
               <div className="mt-4 rounded-2xl border border-[#E4E9E1] bg-white p-4">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#89968E]">
-                  {isGujarati ? "એકાઉન્ટ સ્થિતિ" : "Account status"}
+                  એકાઉન્ટ સ્થિતિ
                 </p>
 
                 <div className="mt-2 flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-emerald-500" />
 
                   <p className="text-sm font-semibold text-emerald-700">
-                    {isGujarati ? "સક્રિય" : "Active"}
+                    સક્રિય
                   </p>
                 </div>
               </div>
@@ -310,13 +246,11 @@ function Settings() {
 
                 <div>
                   <p className="text-sm font-semibold text-[#202722]">
-                    {isGujarati ? "સુરક્ષા" : "Security"}
+                    સુરક્ષા
                   </p>
 
                   <p className="mt-1 text-xs text-[#89968E]">
-                    {isGujarati
-                      ? "તમારી એકાઉન્ટ સુરક્ષા મેનેજ કરો"
-                      : "Manage your account security"}
+                    તમારી એકાઉન્ટ સુરક્ષા મેનેજ કરો
                   </p>
                 </div>
               </div>
@@ -326,14 +260,13 @@ function Settings() {
                 onClick={handleChangePassword}
                 className="mt-6 w-full rounded-xl border border-[#E4E9E1] px-4 py-3 text-left text-xs font-semibold text-[#202722] transition hover:border-[#001e61] hover:text-[#001e61]"
               >
-                {isGujarati ? "પાસવર્ડ બદલો" : "Change password"}
+                પાસવર્ડ બદલો
               </button>
 
               {showPasswordMessage && (
                 <div className="mt-3 rounded-xl bg-[#F0F3F9] px-4 py-3 text-xs text-[#738078]">
-                  {isGujarati
-                    ? "પાસવર્ડ મેનેજમેન્ટ authentication settings સાથે કનેક્ટ કરવામાં આવશે."
-                    : "Password management will be connected when authentication settings are integrated."}
+                  ઓથેન્ટિકેશન સેટિંગ્સ એકીકૃત કરવામાં આવશે ત્યારે પાસવર્ડ
+                  મેનેજમેન્ટ કનેક્ટ કરવામાં આવશે.
                 </div>
               )}
 
@@ -343,7 +276,7 @@ function Settings() {
                 className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-[#FBE9E7] px-4 py-3 text-xs font-semibold text-[#C94B3F] transition hover:bg-[#F7DDDA]"
               >
                 <LogOut size={15} strokeWidth={1.8} />
-                {isGujarati ? "લૉગ આઉટ" : "Log out"}
+                લોગ આઉટ
               </button>
             </div>
           </div>
@@ -359,13 +292,12 @@ function Settings() {
 
               <div>
                 <p className="text-sm font-bold text-red-800">
-                  {isGujarati ? "જોખમ વિસ્તાર" : "Danger Zone"}
+                  જોખમી વિસ્તાર
                 </p>
 
                 <p className="mt-1 max-w-xl text-xs leading-5 text-red-700/70">
-                  {isGujarati
-                    ? "એકાઉન્ટ ડિલીટ કરવાથી તમારું RenewAI એકાઉન્ટ અને સંબંધિત ડેટા કાયમી રીતે દૂર થઈ જશે."
-                    : "Deleting your account permanently removes your RenewAI account and associated data."}
+                  તમારું એકાઉન્ટ ડિલીટ કરવાથી તમારું RenewAI એકાઉન્ટ અને
+                  સંબંધિત ડેટા કાયમી રીતે દૂર થઈ જશે.
                 </p>
               </div>
             </div>
@@ -375,7 +307,7 @@ function Settings() {
               onClick={() => setShowDeleteConfirmation(true)}
               className="shrink-0 rounded-xl border border-red-200 bg-white px-5 py-3 text-xs font-bold text-red-600 transition hover:bg-red-50"
             >
-              {isGujarati ? "એકાઉન્ટ ડિલીટ કરો" : "Delete Account"}
+              એકાઉન્ટ ડિલીટ કરો
             </button>
           </div>
         </section>
@@ -390,15 +322,12 @@ function Settings() {
             </div>
 
             <h2 className="mt-5 text-xl font-bold text-slate-900">
-              {isGujarati
-                ? "તમારું એકાઉન્ટ ડિલીટ કરવું છે?"
-                : "Delete your account?"}
+              તમારું એકાઉન્ટ ડિલીટ કરવું છે?
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              {isGujarati
-                ? "આ સુવિધા હાલમાં backend સાથે કનેક્ટ નથી."
-                : "This action cannot be completed from the current frontend-only settings. Account deletion will be connected to the backend later."}
+              આ ક્રિયા વર્તમાન ફ્રન્ટએન્ડ-ઓન્લી સેટિંગ્સમાંથી પૂર્ણ કરી શકાતી
+              નથી. એકાઉન્ટ ડિલીશન પછીથી બેકએન્ડ સાથે કનેક્ટ કરવામાં આવશે.
             </p>
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -407,7 +336,7 @@ function Settings() {
                 onClick={() => setShowDeleteConfirmation(false)}
                 className="rounded-xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
               >
-                {isGujarati ? "રદ કરો" : "Cancel"}
+                રદ કરો
               </button>
 
               <button
@@ -415,7 +344,7 @@ function Settings() {
                 onClick={() => setShowDeleteConfirmation(false)}
                 className="rounded-xl bg-red-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-700"
               >
-                {isGujarati ? "બંધ કરો" : "Close"}
+                બંધ કરો
               </button>
             </div>
           </div>
@@ -445,4 +374,4 @@ function Toggle({ enabled, onClick, label }) {
   );
 }
 
-export default Settings;
+export default SettingsGujarati;

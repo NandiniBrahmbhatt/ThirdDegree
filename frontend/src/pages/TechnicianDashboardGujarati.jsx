@@ -3,17 +3,18 @@ import {
   MapPin,
   Wrench,
   IndianRupee,
-  Save,
   ArrowRight,
+  Save,
 } from "lucide-react";
 import { apiRequest } from "../services/api";
 
-function TechnicianDetails() {
-  const [details, setDetails] = useState({
+function TechnicianDashboardGujarati() {
+  const [formData, setFormData] = useState({
     city: "",
     address: "",
     specialization: "",
     charges: "",
+    experience: "",
   });
 
   const [saved, setSaved] = useState(false);
@@ -24,9 +25,11 @@ function TechnicianDetails() {
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        const profile = await apiRequest("/technicians/profile");
+        const profile = await apiRequest("/technicians/profile", {
+          cache: "no-store",
+        });
 
-        setDetails({
+        setFormData({
           city: profile.city || "",
           address: profile.address || "",
           specialization: profile.specialization || "",
@@ -34,9 +37,11 @@ function TechnicianDetails() {
             profile.charges !== null && profile.charges !== undefined
               ? String(profile.charges)
               : "",
+          experience: profile.experience || "",
         });
       } catch (err) {
-        setError("Unable to load your saved details.");
+        console.error("Failed to load technician profile:", err);
+        setError("તમારી સેવ કરેલી પ્રોફાઇલ વિગતો લોડ કરી શકાઈ નથી.");
       } finally {
         setLoading(false);
       }
@@ -48,7 +53,7 @@ function TechnicianDetails() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setDetails((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
@@ -68,17 +73,21 @@ function TechnicianDetails() {
       await apiRequest("/technicians/profile", {
         method: "PUT",
         body: JSON.stringify({
-          city: details.city,
-          address: details.address,
-          specialization: details.specialization,
+          city: formData.city,
+          address: formData.address,
+          specialization: formData.specialization,
           charges:
-            details.charges === "" ? null : Number(details.charges),
+            formData.charges === "" ? null : Number(formData.charges),
+          experience: formData.experience,
         }),
       });
 
       setSaved(true);
     } catch (err) {
-      setError("Unable to save your details. Please try again.");
+      console.error("Failed to save technician profile:", err);
+      setError(
+        "તમારી પ્રોફાઇલ વિગતો સેવ કરી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો."
+      );
     } finally {
       setSaving(false);
     }
@@ -86,46 +95,45 @@ function TechnicianDetails() {
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] px-8 pb-12 pt-28 xl:px-12">
-      {/* Header */}
       <section className="mb-10">
-        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-          My Details
-        </p>
+        <div className="max-w-3xl">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
+            ટેકનિશિયન પ્રોફાઇલ
+          </p>
 
-        <h1 className="text-4xl font-semibold tracking-[-0.03em] text-[#202722] xl:text-5xl">
-          Your professional details.
-        </h1>
+          <h1 className="text-4xl font-semibold tracking-[-0.03em] text-[#202722] xl:text-5xl">
+            તમારી નિષ્ણાતી વિશે અમને જણાવો.
+          </h1>
 
-        <p className="mt-4 max-w-2xl text-sm leading-6 text-[#738078]">
-          Add your location, expertise and service charges so renewable energy
-          owners can understand your professional profile.
-        </p>
+          <p className="mt-4 max-w-2xl text-sm leading-6 text-[#738078]">
+            તમારી ટેકનિશિયન પ્રોફાઇલ પૂર્ણ કરો જેથી રિન્યુએબલ એનર્જી માલિકો
+            તમારા અનુભવ અને ટેકનિકલ નિષ્ણાતીને સમજી શકે.
+          </p>
+        </div>
       </section>
 
-      {/* Form */}
       <section className="max-w-4xl rounded-[28px] border border-[#E4E9E1] bg-white p-6 shadow-[0_12px_40px_rgba(32,39,34,0.04)] xl:p-8">
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-[#202722]">
-            Professional information
+            વ્યાવસાયિક વિગતો
           </h2>
 
           <p className="mt-1 text-sm text-[#738078]">
-            Enter the details you want to provide to potential clients.
+            યોગ્ય મેન્ટેનન્સ જરૂરિયાતો સાથે તમને મેચ કરવા માટે ઉપયોગમાં લેવાતી
+            માહિતી ઉમેરો.
           </p>
         </div>
 
         {loading ? (
           <p className="text-sm text-[#738078]">
-            Loading your saved details...
+            તમારી સેવ કરેલી પ્રોફાઇલ લોડ થઈ રહી છે...
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-7">
-            {/* City + Specialization */}
             <div className="grid gap-6 md:grid-cols-2">
-              {/* City */}
               <div>
                 <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                  City
+                  શહેર
                 </label>
 
                 <div className="relative">
@@ -138,19 +146,18 @@ function TechnicianDetails() {
                   <input
                     type="text"
                     name="city"
-                    value={details.city}
+                    value={formData.city}
                     onChange={handleChange}
-                    placeholder="e.g. Ahmedabad"
+                    placeholder="દા.ત. અમદાવાદ"
                     required
                     className="h-12 w-full rounded-2xl border border-[#E4E9E1] bg-[#F7F5F0] pl-11 pr-4 text-sm text-[#202722] outline-none transition focus:border-[#001e61]"
                   />
                 </div>
               </div>
 
-              {/* Specialization */}
               <div>
                 <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                  Specialization
+                  વિશેષતા
                 </label>
 
                 <div className="relative">
@@ -163,9 +170,9 @@ function TechnicianDetails() {
                   <input
                     type="text"
                     name="specialization"
-                    value={details.specialization}
+                    value={formData.specialization}
                     onChange={handleChange}
-                    placeholder="e.g. Solar Inverter Maintenance"
+                    placeholder="દા.ત. સોલાર ઇન્વર્ટર મેન્ટેનન્સ"
                     required
                     className="h-12 w-full rounded-2xl border border-[#E4E9E1] bg-[#F7F5F0] pl-11 pr-4 text-sm text-[#202722] outline-none transition focus:border-[#001e61]"
                   />
@@ -173,27 +180,25 @@ function TechnicianDetails() {
               </div>
             </div>
 
-            {/* Address */}
             <div>
               <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                Address
+                સરનામું
               </label>
 
               <textarea
                 name="address"
-                value={details.address}
+                value={formData.address}
                 onChange={handleChange}
-                placeholder="Enter your service or working address"
+                placeholder="તમારું કામ અથવા સર્વિસનું સરનામું દાખલ કરો"
                 required
-                rows={4}
+                rows={3}
                 className="w-full resize-none rounded-2xl border border-[#E4E9E1] bg-[#F7F5F0] px-4 py-3 text-sm leading-6 text-[#202722] outline-none transition focus:border-[#001e61]"
               />
             </div>
 
-            {/* Charges */}
             <div className="max-w-md">
               <label className="mb-2 block text-xs font-semibold text-[#202722]">
-                Charges
+                ચાર્જ
               </label>
 
               <div className="relative">
@@ -206,9 +211,9 @@ function TechnicianDetails() {
                 <input
                   type="number"
                   name="charges"
-                  value={details.charges}
+                  value={formData.charges}
                   onChange={handleChange}
-                  placeholder="Enter your service charges"
+                  placeholder="તમારા સર્વિસ ચાર્જ દાખલ કરો"
                   min="0"
                   required
                   className="h-12 w-full rounded-2xl border border-[#E4E9E1] bg-[#F7F5F0] pl-11 pr-4 text-sm text-[#202722] outline-none transition focus:border-[#001e61]"
@@ -216,12 +221,34 @@ function TechnicianDetails() {
               </div>
             </div>
 
-            {/* Save */}
+            <div className="border-t border-[#E4E9E1] pt-7">
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-[#202722]">
+                  તમારો અનુભવ
+                </h3>
+
+                <p className="mt-1 text-sm text-[#738078]">
+                  તમારા પ્રેક્ટિકલ અનુભવ, અગાઉના કામ અને તમે સંભાળી શકો તેવા
+                  ક્ષેત્રોનું વર્ણન કરો.
+                </p>
+              </div>
+
+              <textarea
+                name="experience"
+                value={formData.experience}
+                onChange={handleChange}
+                placeholder="ઉદાહરણ: મને સોલાર PV સિસ્ટમ, ઇન્વર્ટર ઇન્સ્પેક્શન, ઇલેક્ટ્રિકલ ટ્રબલશૂટિંગ અને નિયમિત મેન્ટેનન્સમાં 3 વર્ષનો અનુભવ છે."
+                required
+                rows={7}
+                className="w-full resize-none rounded-2xl border border-[#E4E9E1] bg-[#F7F5F0] px-4 py-4 text-sm leading-6 text-[#202722] outline-none transition focus:border-[#001e61]"
+              />
+            </div>
+
             <div className="flex flex-col gap-4 border-t border-[#E4E9E1] pt-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 {saved ? (
                   <p className="text-xs font-medium text-[#001e61]">
-                    Your details have been saved successfully.
+                    ડેટા સેવ થયો!
                   </p>
                 ) : error ? (
                   <p className="text-xs font-medium text-red-600">
@@ -229,7 +256,7 @@ function TechnicianDetails() {
                   </p>
                 ) : (
                   <p className="text-xs text-[#89968E]">
-                    You can update these details later.
+                    તમે આ પેજ પરથી કોઈપણ સમયે તમારી વિગતો અપડેટ કરી શકો છો.
                   </p>
                 )}
               </div>
@@ -240,15 +267,19 @@ function TechnicianDetails() {
                 className="flex h-11 items-center justify-center gap-2 rounded-full bg-[#001e61] px-6 text-xs font-semibold text-white transition hover:bg-[#001650] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Save size={15} strokeWidth={2} />
-                {saving ? "Saving..." : "Save Details"}
+                {saving ? "સેવ થઈ રહ્યું છે..." : "પ્રોફાઇલ સેવ કરો"}
                 <ArrowRight size={15} strokeWidth={2} />
               </button>
             </div>
           </form>
         )}
       </section>
+
+      <p className="mt-5 max-w-4xl text-[11px] leading-5 text-[#89968E]">
+        તમે આ પેજ પરથી કોઈપણ સમયે તમારી વ્યાવસાયિક વિગતો અપડેટ કરી શકો છો.
+      </p>
     </div>
   );
 }
 
-export default TechnicianDetails;
+export default TechnicianDashboardGujarati;

@@ -3,7 +3,7 @@ import { apiRequest } from "../services/api";
 import { Eye, EyeOff, Leaf, UserRound, Wrench } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
-function Register() {
+function RegisterGujarati() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -41,17 +41,17 @@ const handleSubmit = async (event) => {
     !form.confirmPassword ||
     !form.role
   ) {
-    setError("Please complete all fields and select a role.");
+    setError("કૃપા કરીને બધી વિગતો ભરો અને એક ભૂમિકા પસંદ કરો.");
     return;
   }
 
   if (form.password !== form.confirmPassword) {
-    setError("Passwords do not match.");
+    setError("પાસવર્ડ એકસરખા નથી.");
     return;
   }
 
   if (form.password.length < 6) {
-    setError("Password must contain at least 6 characters.");
+    setError("પાસવર્ડમાં ઓછામાં ઓછા 6 અક્ષરો હોવા જોઈએ.");
     return;
   }
 
@@ -67,10 +67,10 @@ const handleSubmit = async (event) => {
       }),
     });
 
-    navigate("/");
+    navigate("/gu/login");
   } catch (error) {
     console.error(error);
-    setError("Unable to create account. Please try again.");
+    setError("એકાઉન્ટ બનાવી શકાયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.");
   }
 };
 
@@ -80,7 +80,7 @@ const handleSubmit = async (event) => {
       <section className="relative hidden overflow-hidden lg:block">
         <img
           src="/images/solar-farm.png"
-          alt="Renewable energy farm"
+          alt="નવીનીકરણીય ઊર્જાનું ફાર્મ"
           className="absolute inset-0 h-full w-full object-cover"
         />
 
@@ -97,30 +97,30 @@ const handleSubmit = async (event) => {
                 RenewAI
               </p>
               <p className="mt-0.5 text-[9px] font-medium text-white/65">
-                Renewable Intelligence
+                નવીનીકરણીય ઇન્ટેલિજન્સ
               </p>
             </div>
           </div>
 
           <div className="max-w-[520px]">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/65">
-              Renewable intelligence
+              નવીનીકરણીય ઇન્ટેલિજન્સ
             </p>
 
             <h1 className="mt-5 text-5xl font-semibold leading-[1.02] tracking-[-0.05em] xl:text-6xl">
-              Build a healthier
+              વધુ સ્વસ્થ
               <br />
-              energy future.
+              ઊર્જા ભવિષ્ય બનાવો.
             </h1>
 
             <p className="mt-6 max-w-[430px] text-sm leading-6 text-white/70">
-              Monitor renewable assets, understand emerging risks, and turn
-              maintenance decisions into smarter action.
+              નવીનીકરણીય એસેટ્સનું મોનીટરિંગ કરો, ઉભરતા જોખમોને સમજો અને
+              મેન્ટેનન્સના નિર્ણયોને વધુ સ્માર્ટ કામગીરીમાં ફેરવો.
             </p>
           </div>
 
           <p className="text-[10px] font-medium text-white/50">
-            AI-assisted renewable asset intelligence
+            AI આધારિત નવીનીકરણીય એસેટ ઇન્ટેલિજન્સ
           </p>
         </div>
       </section>
@@ -139,7 +139,7 @@ const handleSubmit = async (event) => {
                   RenewAI
                 </h1>
                 <p className="mt-0.5 text-[9px] font-medium text-[#89968E]">
-                  Renewable Intelligence
+                  નવીનીકરણીય ઇન્ટેલિજન્સ
                 </p>
               </div>
             </div>
@@ -147,15 +147,15 @@ const handleSubmit = async (event) => {
 
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#001e61]">
-              Get started
+              શરૂઆત કરો
             </p>
 
             <h2 className="mt-2 text-4xl font-semibold tracking-[-0.045em] text-[#202722]">
-              Create your account
+              તમારું એકાઉન્ટ બનાવો
             </h2>
 
             <p className="mt-3 text-sm leading-6 text-[#738078]">
-              Choose your role to set up the right RenewAI workspace.
+              યોગ્ય RenewAI વર્કસ્પેસ સેટ કરવા માટે તમારી ભૂમિકા પસંદ કરો.
             </p>
           </div>
 
@@ -166,7 +166,7 @@ const handleSubmit = async (event) => {
                 htmlFor="fullName"
                 className="mb-2 block text-[11px] font-semibold text-[#202722]"
               >
-                Full name
+                પૂરું નામ
               </label>
 
               <input
@@ -175,7 +175,7 @@ const handleSubmit = async (event) => {
                 type="text"
                 value={form.fullName}
                 onChange={handleChange}
-                placeholder="Enter your full name"
+                placeholder="તમારું પૂરું નામ દાખલ કરો"
                 className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-white px-4 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
               />
             </div>
@@ -187,7 +187,7 @@ const handleSubmit = async (event) => {
                   htmlFor="email"
                   className="mb-2 block text-[11px] font-semibold text-[#202722]"
                 >
-                  Email
+                  ઇમેઇલ
                 </label>
 
                 <input
@@ -206,7 +206,7 @@ const handleSubmit = async (event) => {
                   htmlFor="phone"
                   className="mb-2 block text-[11px] font-semibold text-[#202722]"
                 >
-                  Phone
+                  ફોન
                 </label>
 
                 <input
@@ -215,7 +215,7 @@ const handleSubmit = async (event) => {
                   type="tel"
                   value={form.phone}
                   onChange={handleChange}
-                  placeholder="Phone number"
+                  placeholder="ફોન નંબર"
                   className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-white px-4 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
                 />
               </div>
@@ -224,7 +224,7 @@ const handleSubmit = async (event) => {
             {/* Role */}
             <div>
               <label className="mb-2 block text-[11px] font-semibold text-[#202722]">
-                Choose your role
+                તમારી ભૂમિકા પસંદ કરો
               </label>
 
               <div className="grid gap-3 sm:grid-cols-2">
@@ -253,11 +253,11 @@ const handleSubmit = async (event) => {
                   </div>
 
                   <p className="mt-3 text-sm font-semibold text-[#202722]">
-                    Farm Owner
+                    ફાર્મ માલિક
                   </p>
 
                   <p className="mt-1 text-[11px] leading-5 text-[#89968E]">
-                    Manage farms, assets and maintenance.
+                    ફાર્મ્સ, એસેટ્સ અને મેન્ટેનન્સ મેનેજ કરો.
                   </p>
                 </button>
 
@@ -286,11 +286,11 @@ const handleSubmit = async (event) => {
                   </div>
 
                   <p className="mt-3 text-sm font-semibold text-[#202722]">
-                    Technician
+                    ટેકનિશિયન
                   </p>
 
                   <p className="mt-1 text-[11px] leading-5 text-[#89968E]">
-                    Receive and manage maintenance work.
+                    મેન્ટેનન્સનું કામ મેળવો અને મેનેજ કરો.
                   </p>
                 </button>
               </div>
@@ -302,7 +302,7 @@ const handleSubmit = async (event) => {
                 htmlFor="password"
                 className="mb-2 block text-[11px] font-semibold text-[#202722]"
               >
-                Password
+                પાસવર્ડ
               </label>
 
               <div className="relative">
@@ -312,7 +312,7 @@ const handleSubmit = async (event) => {
                   type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={handleChange}
-                  placeholder="Create a password"
+                  placeholder="પાસવર્ડ બનાવો"
                   className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-white px-4 pr-11 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
                 />
 
@@ -320,7 +320,7 @@ const handleSubmit = async (event) => {
                   type="button"
                   onClick={() => setShowPassword((current) => !current)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#89968E] transition hover:text-[#001e61]"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={showPassword ? "પાસવર્ડ છુપાવો" : "પાસવર્ડ બતાવો"}
                 >
                   {showPassword ? (
                     <EyeOff size={17} strokeWidth={1.8} />
@@ -337,7 +337,7 @@ const handleSubmit = async (event) => {
                 htmlFor="confirmPassword"
                 className="mb-2 block text-[11px] font-semibold text-[#202722]"
               >
-                Confirm password
+                પાસવર્ડની પુષ્ટિ કરો
               </label>
 
               <div className="relative">
@@ -347,7 +347,7 @@ const handleSubmit = async (event) => {
                   type={showConfirmPassword ? "text" : "password"}
                   value={form.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Re-enter your password"
+                  placeholder="તમારો પાસવર્ડ ફરીથી દાખલ કરો"
                   className="h-11 w-full rounded-xl border border-[#E4E9E1] bg-white px-4 pr-11 text-sm text-[#202722] outline-none transition placeholder:text-[#89968E] focus:border-[#001e61] focus:ring-2 focus:ring-[#E6ECF7]"
                 />
 
@@ -359,8 +359,8 @@ const handleSubmit = async (event) => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#89968E] transition hover:text-[#001e61]"
                   aria-label={
                     showConfirmPassword
-                      ? "Hide confirm password"
-                      : "Show confirm password"
+                      ? "પાસવર્ડની પુષ્ટિ છુપાવો"
+                      : "પાસવર્ડની પુષ્ટિ બતાવો"
                   }
                 >
                   {showConfirmPassword ? (
@@ -383,23 +383,23 @@ const handleSubmit = async (event) => {
               className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#001e61] text-sm font-semibold text-white transition hover:bg-[#00164A]"
             >
               <UserRound size={16} strokeWidth={1.8} />
-              Create Account
+              એકાઉન્ટ બનાવો
             </button>
           </form>
 
           <p className="mt-7 text-center text-xs text-[#738078]">
-            Already have an account?{" "}
+            પહેલેથી એકાઉન્ટ છે?{" "}
             <Link
-              to="/"
+              to="/gu/login"
               className="font-semibold text-[#001e61] hover:underline"
             >
-              Sign in
+              સાઇન ઇન કરો
             </Link>
           </p>
 
           <p className="mt-5 text-center text-[10px] leading-5 text-[#89968E]">
-            Registration is currently running in prototype mode. Account
-            creation will be connected to the backend authentication API.
+            રજિસ્ટ્રેશન હાલમાં પ્રોટોટાઇપ મોડમાં ચાલી રહ્યું છે. એકાઉન્ટ
+            બનાવવાની પ્રક્રિયા બેકએન્ડ ઓથેન્ટિકેશન API સાથે જોડવામાં આવશે.
           </p>
         </div>
       </section>
@@ -407,4 +407,4 @@ const handleSubmit = async (event) => {
   );
 }
 
-export default Register;
+export default RegisterGujarati;

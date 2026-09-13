@@ -4,11 +4,12 @@ routers/technicians.py
 Technician profile endpoints.
 
 Technicians can view and update their own professional details.
-The logged-in technician is identified from the JWT token, so the
-frontend never needs to send a user_id.
+Farm owners can search the technician directory using name, city,
+or specialization.
 """
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from backend.database import get_db
@@ -61,9 +62,7 @@ def update_my_profile(
     )
 
     if not profile:
-        profile = TechnicianProfile(
-            user_id=current_user.user_id
-        )
+        profile = TechnicianProfile(user_id=current_user.user_id)
         db.add(profile)
 
     profile.city = profile_in.city
@@ -76,3 +75,81 @@ def update_my_profile(
     db.refresh(profile)
 
     return profile
+
+
+@router.get("/directory")
+def get_technician_directory(
+    search: str = Query(default=""),
+    city: str = Query(default=""),
+    specialization: str = Query(default=""),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("farm_owner")),
+):
+    query = (
+        db.query(TechnicianProfile, User)
+        .join(User, TechnicianProfile.user_id == User.user_id)
+        .filter(User.role == "technician")
+    )
+
+    search = search.strip()
+    city = city.strip()
+    specialization = specialization.strip()
+
+    if search:
+        search_pattern = f"%{search}%"
+
+        query = query.filter(
+            or_(
+                User.full_name.ilike(search_pattern),
+                TechnicianProfile.specialization.ilike(search_pattern),
+                TechnicianProfile.experience.ilike(search_pattern),
+                TechnicianProfile.city.ilike(search_pattern),
+            )
+        )
+
+    if city:
+        query = query.filter(
+            TechnicianProfile.city.ilike(f"%{city}%")
+        )
+
+    if specialization and specialization.lower() != "all specializations":
+        query = query.filter(
+            TechnicianProfile.specialization.ilike(
+                f"%{specialization}%"
+            )
+        )
+
+    results = query.order_by(User.full_name.asc()).all()
+
+    technicians = []
+
+    for profile, user in results:
+        specializations = []
+
+        if profile.specialization:
+            specializations = [
+                item.strip()
+                for item in profile.specialization.replace("&", ",").split(",")
+                if item.strip()
+            ]
+
+        technicians.append(
+            {
+                "technician_id": profile.technician_id,
+                "user_id": user.user_id,
+                "name": user.full_name,
+                "phone": user.phone,
+                "city": profile.city,
+                "address": profile.address,
+                "experience": profile.experience,
+                "specialization": profile.specialization,
+                "specializations": specializations,
+                "charges": (
+                    float(profile.charges)
+                    if profile.charges is not None
+                    else None
+                ),
+            }
+        )
+
+    return technicians

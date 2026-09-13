@@ -1,10 +1,62 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { Search, Globe2, ChevronDown } from "lucide-react";
 import { useLanguage } from "../hooks/useLanguage";
 
 function DashboardLayout() {
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isGujarati = location.pathname.startsWith("/gu/");
+
+  const getGujaratiPath = (path) => {
+    if (path === "/dashboard") return "/gu/dashboard";
+    if (path === "/farms") return "/gu/farms";
+    if (path === "/assets") return "/gu/assets";
+    if (path === "/ai-analyzer") return "/gu/ai-analyzer";
+    if (path === "/alerts") return "/gu/alerts";
+    if (path === "/monitor") return "/gu/monitor";
+    if (path === "/technicians") return "/gu/technicians";
+    if (path === "/profile") return "/gu/profile";
+    if (path === "/settings") return "/gu/settings";
+
+    if (path.startsWith("/assets/")) {
+      return `/gu${path}`;
+    }
+
+    return `/gu${path}`;
+  };
+
+  const getEnglishPath = (path) => {
+    if (path === "/gu/dashboard") return "/dashboard";
+    if (path === "/gu/farms") return "/farms";
+    if (path === "/gu/assets") return "/assets";
+    if (path === "/gu/ai-analyzer") return "/ai-analyzer";
+    if (path === "/gu/alerts") return "/alerts";
+    if (path === "/gu/monitor") return "/monitor";
+    if (path === "/gu/technicians") return "/technicians";
+    if (path === "/gu/profile") return "/profile";
+    if (path === "/gu/settings") return "/settings";
+
+    if (path.startsWith("/gu/assets/")) {
+      return path.replace("/gu", "");
+    }
+
+    return path.replace(/^\/gu/, "") || "/dashboard";
+  };
+
+  const handleLanguageChange = () => {
+    const currentPath = location.pathname;
+
+    if (isGujarati) {
+      setLanguage("en");
+      navigate(getEnglishPath(currentPath));
+    } else {
+      setLanguage("gu");
+      navigate(getGujaratiPath(currentPath));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] text-[#202722]">
@@ -22,14 +74,18 @@ function DashboardLayout() {
 
               <input
                 type="text"
-                placeholder="Search farms, assets, or anything..."
+                placeholder={
+                  isGujarati
+                    ? "ફાર્મ, એસેટ અથવા કંઈપણ શોધો..."
+                    : "Search farms, assets, or anything..."
+                }
                 className="w-full bg-transparent text-[12px] text-[#202722] outline-none placeholder:text-[#89968E]"
               />
             </div>
 
             <div className="flex shrink-0 items-center gap-3">
               <button
-                onClick={toggleLanguage}
+                onClick={handleLanguageChange}
                 className="flex h-10.5 items-center gap-3 rounded-full border border-[#E4E9E1] bg-[#FAFBF7]/90 px-4 text-[12px] font-medium text-[#202722] backdrop-blur-md transition hover:bg-white"
               >
                 <Globe2
@@ -39,7 +95,7 @@ function DashboardLayout() {
                 />
 
                 <span>
-                  {language === "en" ? "English" : "ગુજરાતી"}
+                  {isGujarati ? "English" : "ગુજરાતી"}
                 </span>
 
                 <ChevronDown

@@ -13,7 +13,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.database import Base, engine, SessionLocal
-from backend.routers import users, farms, assets, sensors, analyses, jobs
+from backend.routers import users, farms, assets, sensors, analyses, jobs, technicians
 from backend.routes.translation import router as translation_router
 
 # Creates all tables if they don't exist yet - safe to run every startup
@@ -39,6 +39,7 @@ app.include_router(assets.router)
 app.include_router(sensors.router)
 app.include_router(analyses.router)
 app.include_router(jobs.router)
+app.include_router(technicians.router)
 app.include_router(translation_router, prefix="/api")
 
 
