@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Building2,
@@ -10,10 +10,14 @@ import {
   UserRound,
   Settings,
   LogOut,
+  Wrench,
+  ShieldCheck,
+  BookOpen,
 } from "lucide-react";
 
 function Sidebar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const savedUser = localStorage.getItem("renewai_user");
 
@@ -26,50 +30,70 @@ function Sidebar() {
   }
 
   const isTechnician = user?.role === "technician";
+  const isGujarati = location.pathname.startsWith("/gu/");
 
+  // Farmer navigation
   const farmerNavigationLinks = [
     {
-      label: "Dashboard",
-      path: "/dashboard",
+      label: isGujarati ? "ડેશબોર્ડ" : "Dashboard",
+      path: isGujarati ? "/gu/dashboard" : "/dashboard",
       icon: LayoutDashboard,
     },
     {
-      label: "Farms",
-      path: "/farms",
+      label: isGujarati ? "ફાર્મ્સ" : "Farms",
+      path: isGujarati ? "/gu/farms" : "/farms",
       icon: Building2,
     },
     {
-      label: "Assets",
-      path: "/assets",
+      label: isGujarati ? "એસેટ્સ" : "Assets",
+      path: isGujarati ? "/gu/assets" : "/assets",
       icon: Cpu,
     },
     {
-      label: "AI Analyzer",
-      path: "/ai-analyzer",
+      label: isGujarati ? "AI વિશ્લેષક" : "AI Analyzer",
+      path: isGujarati ? "/gu/ai-analyzer" : "/ai-analyzer",
       icon: BrainCircuit,
     },
     {
-      label: "Alerts",
-      path: "/alerts",
+      label: isGujarati ? "ચેતવણીઓ" : "Alerts",
+      path: isGujarati ? "/gu/alerts" : "/alerts",
       icon: Bell,
     },
     {
-      label: "Monitor",
-      path: "/monitor",
+      label: isGujarati ? "મોનિટર" : "Monitor",
+      path: isGujarati ? "/gu/monitor" : "/monitor",
       icon: Activity,
     },
     {
-      label: "Technicians",
-      path: "/technicians",
+      label: isGujarati ? "ટેકનિશિયન્સ" : "Technicians",
+      path: isGujarati ? "/gu/technicians" : "/technicians",
       icon: Users,
     },
   ];
 
+  // Technician navigation
   const technicianNavigationLinks = [
     {
-      label: "Dashboard",
+      label: isGujarati ? "ડેશબોર્ડ" : "Dashboard",
       path: "/technician",
       icon: LayoutDashboard,
+    },
+    {
+      label: isGujarati ? "મેન્ટેનન્સ ટિપ્સ" : "Maintenance Tips",
+      path: "/technician/maintenance",
+      icon: Wrench,
+    },
+    {
+      label: isGujarati ? "સલામતી સાવચેતીઓ" : "Safety Precautions",
+      path: "/technician/safety",
+      icon: ShieldCheck,
+    },
+    {
+      label: isGujarati
+        ? "સોલાર અને વિન્ડ માર્ગદર્શન"
+        : "Solar & Wind Guidance",
+      path: "/technician/guidance",
+      icon: BookOpen,
     },
   ];
 
@@ -77,19 +101,21 @@ function Sidebar() {
     ? technicianNavigationLinks
     : farmerNavigationLinks;
 
+  // Account links
   const accountLinks = [
     {
-      label: "Profile",
-      path: "/profile",
+      label: isGujarati ? "પ્રોફાઇલ" : "Profile",
+      path: isGujarati ? "/gu/profile" : "/profile",
       icon: UserRound,
     },
     {
-      label: "Settings",
-      path: "/settings",
+      label: isGujarati ? "સેટિંગ્સ" : "Settings",
+      path: isGujarati ? "/gu/settings" : "/settings",
       icon: Settings,
     },
   ];
 
+  // Navigation link styling
   const linkClass = ({ isActive }) =>
     `group flex items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-medium transition ${
       isActive
@@ -97,14 +123,22 @@ function Sidebar() {
         : "text-[#738078] hover:bg-[#F0F3F9] hover:text-[#001e61]"
     }`;
 
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("renewai_user");
     localStorage.removeItem("renewai_token");
     navigate("/");
   };
 
+  // Logo navigation
   const handleLogoClick = () => {
-    navigate(isTechnician ? "/technician" : "/dashboard");
+    navigate(
+      isTechnician
+        ? "/technician"
+        : isGujarati
+          ? "/gu/dashboard"
+          : "/dashboard"
+    );
   };
 
   return (
@@ -125,10 +159,10 @@ function Sidebar() {
         </button>
       </div>
 
-      {/* Main navigation */}
+      {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto px-4">
         <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
-          Workspace
+          {isGujarati ? "કાર્યસ્થળ" : "Workspace"}
         </p>
 
         <div className="space-y-1">
@@ -148,10 +182,12 @@ function Sidebar() {
           })}
         </div>
 
+        {/* Divider */}
         <div className="my-7 h-px bg-[#E4E9E1]" />
 
+        {/* Account */}
         <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-[#89968E]">
-          Account
+          {isGujarati ? "એકાઉન્ટ" : "Account"}
         </p>
 
         <div className="space-y-1">
@@ -179,7 +215,7 @@ function Sidebar() {
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-[13px] font-medium text-[#738078] transition hover:bg-[#F0F3F9] hover:text-[#001e61]"
         >
           <LogOut size={17} strokeWidth={1.8} />
-          <span>Logout</span>
+          <span>{isGujarati ? "લૉગઆઉટ" : "Logout"}</span>
         </button>
       </div>
     </aside>
