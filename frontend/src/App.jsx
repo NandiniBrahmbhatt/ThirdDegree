@@ -8,11 +8,17 @@ import LoginGujarati from "./pages/LoginGujarati";
 import Register from "./pages/Register";
 import RegisterGujarati from "./pages/RegisterGujarati";
 
-// Technician
+// Technician - English
 import TechnicianDashboard from "./pages/TechnicianDashboard";
 import TechnicianMaintenance from "./pages/TechnicianMaintenance";
 import TechnicianSafety from "./pages/TechnicianSafety";
 import TechnicianGuidance from "./pages/TechnicianGuidance";
+
+// Technician - Gujarati
+import TechnicianDashboardGujarati from "./pages/TechnicianDashboardGujarati";
+import TechnicianMaintenanceGujarati from "./pages/TechnicianMaintenanceGujarati";
+import TechnicianSafetyGujarati from "./pages/TechnicianSafetyGujarati";
+import TechnicianGuidanceGujarati from "./pages/TechnicianGuidanceGujarati";
 
 // Farmer - English
 import Dashboard from "./pages/Dashboard";
@@ -160,7 +166,7 @@ function App() {
 
 
       {/* =====================================================
-          TECHNICIAN WORKSPACE
+          TECHNICIAN WORKSPACE - ENGLISH
 
           /technician
           /technician/maintenance
@@ -198,10 +204,51 @@ function App() {
 
 
       {/* =====================================================
+          TECHNICIAN WORKSPACE - GUJARATI
+
+          /gu/technician
+          /gu/technician/maintenance
+          /gu/technician/safety
+          /gu/technician/guidance
+      ====================================================== */}
+
+      <Route
+        path="/gu/technician"
+        element={
+          <TechnicianRoute>
+            <DashboardLayout />
+          </TechnicianRoute>
+        }
+      >
+        {/* Gujarati technician main dashboard */}
+        <Route
+          index
+          element={<TechnicianDashboardGujarati />}
+        />
+
+        {/* Gujarati static technician information */}
+        <Route
+          path="maintenance"
+          element={<TechnicianMaintenanceGujarati />}
+        />
+
+        <Route
+          path="safety"
+          element={<TechnicianSafetyGujarati />}
+        />
+
+        <Route
+          path="guidance"
+          element={<TechnicianGuidanceGujarati />}
+        />
+      </Route>
+
+
+      {/* =====================================================
           SETTINGS
-          
+
           Available to BOTH technicians and farm owners.
-          
+
           /settings
           /gu/settings
       ====================================================== */}

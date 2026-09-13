@@ -12,84 +12,84 @@ import {
 import { apiRequest } from "../services/api";
 
 const specializationOptions = [
-  "All Specializations",
-  "Solar",
-  "Wind",
-  "Electrical",
-  "Mechanical",
+  "તમામ વિશેષતાઓ",
+  "સોલાર",
+  "વિન્ડ",
+  "ઇલેક્ટ્રિકલ",
+  "મિકેનિકલ",
 ];
 
 function TechnicianCard({ technician, onViewProfile }) {
-  return (
-    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-6">
-      <div className="flex items-start gap-4">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#001e61] text-sm font-bold text-white shadow-sm">
-          {technician.initials}
-        </div>
-
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="truncate text-base font-bold text-slate-900">
-              {technician.name}
-            </h3>
-
-            <ShieldCheck
-              size={17}
-              className="shrink-0 text-emerald-500"
-            />
-          </div>
-
-          <p className="mt-1 text-xs font-medium text-slate-500">
-            Renewable Energy Technician
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-5 space-y-3">
-        <div className="flex items-center gap-2.5 text-sm text-slate-600">
-          <MapPin size={16} className="shrink-0 text-slate-400" />
-          <span>{technician.city || "Location not specified"}</span>
-        </div>
-
-        <div className="flex items-center gap-2.5 text-sm text-slate-600">
-          <BriefcaseBusiness
-            size={16}
-            className="shrink-0 text-slate-400"
-          />
-          <span>
-            {technician.experience || "Experience not specified"}
-          </span>
-        </div>
-      </div>
-
-      {technician.specializations.length > 0 && (
-        <div className="mt-5 flex flex-wrap gap-2">
-          {technician.specializations.map((item) => (
-            <span
-              key={item}
-              className="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-semibold text-slate-600"
-            >
-              {item}
-            </span>
-          ))}
-        </div>
-      )}
-
-      {technician.charges !== null && (
-        <p className="mt-4 text-sm font-semibold text-slate-700">
-          ₹{technician.charges} service charges
-        </p>
-      )}
-
-      <button
-        type="button"
-        onClick={() => onViewProfile(technician)}
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-[#001e61] transition hover:border-[#001e61] hover:bg-slate-50"
-      >
-        View Profile
-      </button>
-    </article>
-  );
+    return ( 
+    <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-6"> 
+        <div className="flex items-start gap-4"> 
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#001e61] text-sm font-bold text-white shadow-sm"> 
+            {technician.initials} 
+        </div> 
+    
+        <div className="min-w-0"> 
+            <div className="flex items-center gap-2"> 
+            <h3 className="truncate text-base font-bold text-slate-900"> 
+                {technician.name} 
+            </h3> 
+    
+            <ShieldCheck 
+                size={17} 
+                className="shrink-0 text-emerald-500" 
+            /> 
+            </div> 
+    
+            <p className="mt-1 text-xs font-medium text-slate-500"> 
+            નવીનીકરણીય ઊર્જા ટેકનિશિયન 
+            </p> 
+        </div> 
+        </div> 
+    
+        <div className="mt-5 space-y-3"> 
+        <div className="flex items-center gap-2.5 text-sm text-slate-600"> 
+            <MapPin size={16} className="shrink-0 text-slate-400" /> 
+            <span>{technician.city || "સ્થાન દર્શાવેલ નથી"}</span> 
+        </div> 
+    
+        <div className="flex items-center gap-2.5 text-sm text-slate-600"> 
+            <BriefcaseBusiness 
+            size={16} 
+            className="shrink-0 text-slate-400" 
+            /> 
+            <span> 
+            {technician.experience || "અનુભવ દર્શાવેલ નથી"} 
+            </span> 
+        </div> 
+        </div> 
+    
+        {technician.specializations.length > 0 && ( 
+        <div className="mt-5 flex flex-wrap gap-2"> 
+            {technician.specializations.map((item) => ( 
+            <span 
+                key={item} 
+                className="rounded-full bg-slate-100 px-3 py-1.5 text-[10px] font-semibold text-slate-600" 
+            > 
+                {item} 
+            </span> 
+            ))} 
+        </div> 
+        )} 
+    
+        {technician.charges !== null && ( 
+        <p className="mt-4 text-sm font-semibold text-slate-700"> 
+            ₹{technician.charges} સેવા શુલ્ક 
+        </p> 
+        )} 
+    
+        <button 
+        type="button" 
+        onClick={() => onViewProfile(technician)} 
+        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-[#001e61] transition hover:border-[#001e61] hover:bg-slate-50" 
+        > 
+        પ્રોફાઇલ જુઓ 
+        </button> 
+    </article> 
+    );
 }
 
 function TechnicianProfile({ technician, onClose }) {
@@ -101,7 +101,7 @@ function TechnicianProfile({ technician, onClose }) {
             type="button"
             onClick={onClose}
             className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-            aria-label="Close profile"
+            aria-label="પ્રોફાઇલ બંધ કરો"
           >
             <X size={18} />
           </button>
@@ -145,7 +145,7 @@ function TechnicianProfile({ technician, onClose }) {
 
             <p className="text-sm leading-6 text-slate-600">
               {technician.experience ||
-                "No experience details provided."}
+                "અનુભરની વિગતો આપવામાં આવી નથી."}
             </p>
           </section>
 
@@ -244,7 +244,7 @@ export default function Technicians() {
   const [searchQuery, setSearchQuery] = useState("");
   const [locationQuery, setLocationQuery] = useState("");
   const [specialization, setSpecialization] = useState(
-    "All Specializations"
+    "તમામ વિશેષતાઓ"
   );
 
   const [technicians, setTechnicians] = useState([]);
@@ -270,7 +270,7 @@ export default function Technicians() {
           params.set("city", locationQuery.trim());
         }
 
-        if (specialization !== "All Specializations") {
+        if (specialization !== "તમામ વિશેષતાઓ") {
           params.set("specialization", specialization);
         }
 
@@ -301,13 +301,13 @@ export default function Technicians() {
         setTechnicians(formatted);
       } catch (err) {
         console.error(
-          "Failed to load technicians:",
+          "ટેક્નિશિયન્સ લોડ કરવામાં નિષ્ફળ:",
           err
         );
 
         setTechnicians([]);
         setError(
-          "Unable to load technicians. Please try again."
+          "ટેક્નિશિયન્સ લોડ થઈ શક્યા નથી. કૃપા કરીને ફરી પ્રયાસ કરો."
         );
       } finally {
         setLoading(false);
@@ -375,7 +375,7 @@ export default function Technicians() {
                   onChange={(event) =>
                     setSearchQuery(event.target.value)
                   }
-                  placeholder="Search by name or skill..."
+                  placeholder="નામ અથવા કુશળતા દ્વારા શોધો..."
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                 />
               </div>
@@ -402,7 +402,7 @@ export default function Technicians() {
                   onChange={(event) =>
                     setLocationQuery(event.target.value)
                   }
-                  placeholder="Search city..."
+                  placeholder="શહેર શોધો..."
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
                 />
               </div>

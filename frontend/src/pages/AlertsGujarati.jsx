@@ -21,7 +21,7 @@ function getSeverityStyles(severity) {
       wrapper: "border-red-200 bg-red-50/40",
       icon: "bg-red-100 text-red-600",
       badge: "bg-red-100 text-red-700",
-      label: "Critical",
+      label: "ગંભીર",
       progress: "bg-red-500",
     };
   }
@@ -31,7 +31,7 @@ function getSeverityStyles(severity) {
       wrapper: "border-amber-200 bg-amber-50/30",
       icon: "bg-amber-100 text-amber-600",
       badge: "bg-amber-100 text-amber-700",
-      label: "Warning",
+      label: "ચેતવણી",
       progress: "bg-amber-500",
     };
   }
@@ -40,7 +40,7 @@ function getSeverityStyles(severity) {
     wrapper: "border-emerald-200 bg-emerald-50/30",
     icon: "bg-emerald-100 text-emerald-600",
     badge: "bg-emerald-100 text-emerald-700",
-    label: "Resolved",
+    label: "ઉકેલાયેલ",
     progress: "bg-emerald-500",
   };
 }
@@ -60,12 +60,12 @@ function getSeverityFromAnalysis(analysis) {
 }
 
 function getStatusFromSeverity(severity) {
-  return severity === "resolved" ? "Resolved" : "Active";
+  return severity === "resolved" ? "ઉકેલાયેલ" : "સક્રિય";
 }
 
 function formatTime(value) {
   if (!value) {
-    return "Not available";
+    return "ઉપલબ્ધ નથી";
   }
 
   const date = new Date(value);
@@ -81,13 +81,11 @@ function formatTime(value) {
   );
 
   if (differenceMinutes < 1) {
-    return "Just now";
+    return "હમણાં જ";
   }
 
   if (differenceMinutes < 60) {
-    return `${differenceMinutes} minute${
-      differenceMinutes !== 1 ? "s" : ""
-    } ago`;
+    return `${differenceMinutes} ${differenceMinutes !== 1 ? "મિનિટ" : "મિનિટ"} પહેલાં`;
   }
 
   const differenceHours = Math.floor(
@@ -95,18 +93,14 @@ function formatTime(value) {
   );
 
   if (differenceHours < 24) {
-    return `${differenceHours} hour${
-      differenceHours !== 1 ? "s" : ""
-    } ago`;
+    return `${differenceHours} ${differenceHours !== 1 ? "કલાક" : "કલાક"} પહેલાં`;
   }
 
   const differenceDays = Math.floor(
     differenceHours / 24
   );
 
-  return `${differenceDays} day${
-    differenceDays !== 1 ? "s" : ""
-  } ago`;
+  return `${differenceDays} ${differenceDays !== 1 ? "દિવસ" : "દિવસ"} પહેલાં`;
 }
 
 function formatScore(value) {
@@ -194,11 +188,7 @@ function AlertCard({ alert }) {
                   {alert.asset}
                 </span>
 
-                <span>•</span>
-
                 <span>{alert.assetType}</span>
-
-                <span>•</span>
 
                 <span className="inline-flex items-center gap-1">
                   <Clock3 size={12} />
@@ -234,7 +224,7 @@ function AlertCard({ alert }) {
               />
 
               <span className="text-xs font-semibold text-slate-600">
-                Risk Score
+                જોખમ સ્કોર
               </span>
             </div>
 
@@ -264,7 +254,7 @@ function AlertCard({ alert }) {
 
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-              Recommended Action
+              ભલામણ કરેલ કાર્યવાહી
             </p>
 
             <p className="mt-1 text-sm leading-5 text-slate-700">
@@ -340,24 +330,24 @@ export default function Alerts() {
       const title =
         analysis.probable_issue ||
         (analysis.anomaly_detected
-          ? "Anomaly detected"
-          : "Asset operating normally");
+          ? "અસામાન્યતા મળી"
+          : "એસેટ સામાન્ય રીતે કાર્યરત છે");
 
       const description =
         analysis.contributing_factors ||
         (analysis.anomaly_detected
-          ? "The AI model detected an unusual sensor pattern in the latest asset reading."
-          : "The latest sensor reading is within the expected operating range.");
+          ? "AI મોડેલે નવીનતમ એસેટ રીડિંગમાં અસામાન્ય સેન્સર પેટર્ન શોધી કાઢ્યું."
+          : "નવીનતમ સેન્સર રીડિંગ અપેક્ષિત કાર્યકારી શ્રેણીમાં છે.");
 
       return {
         id: analysis.analysis_id,
         asset: asset?.asset_label || `Asset ${analysis.asset_id}`,
         assetType:
           asset?.asset_type === "solar"
-            ? "Solar Asset"
+            ? "સોલાર એસેટ"
             : asset?.asset_type === "wind"
-              ? "Wind Turbine"
-              : "Renewable Asset",
+              ? "વિન્ડ ટર્બાઇન"
+              : "નવીનીકરણીય એસેટ",
         title,
         description,
         severity,
@@ -365,14 +355,14 @@ export default function Alerts() {
         time: formatTime(analysis.timestamp),
         recommendation:
           analysis.recommended_action ||
-          "Continue monitoring the asset.",
+          "એસેટનું મોનિટરિંગ ચાલુ રાખો.",
         status: getStatusFromSeverity(severity),
       };
     });
   }, [analyses, assets]);
 
   const activeAlerts = alerts.filter(
-    (alert) => alert.status === "Active"
+    (alert) => alert.status === "સક્રિય"
   );
 
   const criticalAlerts = alerts.filter(
@@ -384,7 +374,7 @@ export default function Alerts() {
   );
 
   const resolvedAlerts = alerts.filter(
-    (alert) => alert.status === "Resolved"
+    (alert) => alert.status === "ઉકેલાયેલ"
   );
 
   return (
@@ -402,17 +392,16 @@ export default function Alerts() {
                 <Bell size={18} />
 
                 <span className="text-xs font-bold uppercase tracking-[0.15em]">
-                  Asset Intelligence
+                  એસેટ ઇન્ટેલિજન્સ
                 </span>
               </div>
 
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Alerts
+                ચેતવણીઓ
               </h1>
 
               <p className="mt-3 text-sm leading-6 text-slate-300 sm:text-base">
-                Stay informed about potential issues detected
-                across your renewable energy assets.
+                તમારા નવીનીકરણીય ઊર્જા એસેટ્સમાં શોધાયેલી સંભવિત સમસ્યાઓ વિશે માહિતગાર રહો.
               </p>
             </div>
 
@@ -423,11 +412,11 @@ export default function Alerts() {
               />
 
               <p className="mt-3 text-sm font-semibold">
-                {activeAlerts.length} active
+                {activeAlerts.length} સક્રિય
               </p>
 
               <p className="mt-1 text-xs text-slate-400">
-                Require your attention
+                તમારા ધ્યાનની જરૂર છે
               </p>
             </div>
           </div>
@@ -442,7 +431,7 @@ export default function Alerts() {
                 className="animate-spin text-[#001e61]"
               />
 
-              Loading AI alerts...
+              AI ચેતવણીઓ લોડ થઈ રહી છે...
             </div>
           </section>
         )}
@@ -461,9 +450,9 @@ export default function Alerts() {
               <SummaryCard
                 icon={<Bell size={21} />}
                 iconClass="bg-blue-50 text-blue-600"
-                label="Total Analyses"
+                label="કુલ વિશ્લેષણો"
                 value={alerts.length}
-                description="Latest AI analysis for each asset"
+                description="દરેક એસેટ માટેનું નવીનતમ AI વિશ્લેષણ"
               />
 
               <SummaryCard
@@ -471,41 +460,41 @@ export default function Alerts() {
                 iconClass="bg-red-50 text-red-600"
                 label="Critical"
                 value={criticalAlerts.length}
-                description="Require immediate attention"
+                description="તાત્કાલિક ધ્યાનની જરૂર છે"
               />
 
               <SummaryCard
                 icon={<AlertTriangle size={21} />}
                 iconClass="bg-amber-50 text-amber-600"
-                label="Warnings"
+                label="ચેતવણીઓ"
                 value={warningAlerts.length}
-                description="Keep these assets under watch"
+                description="આ એસેટ્સ પર નજર રાખો"
               />
 
               <SummaryCard
                 icon={<CheckCircle2 size={21} />}
                 iconClass="bg-emerald-50 text-emerald-600"
-                label="Healthy"
+                label="સ્વસ્થ"
                 value={resolvedAlerts.length}
-                description="Latest analyses without active risk"
+                description="સક્રિય જોખમ વિના નવીનતમ વિશ્લેષણો"
               />
             </section>
 
-            {/* Active Alerts */}
+            {/* સક્રિય ચેતવણીઓ */}
             <section>
               <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-                    Attention Required
+                    ધ્યાન જરૂરી છે
                   </p>
 
                   <h2 className="mt-1 text-xl font-bold text-slate-900">
-                    Active Alerts
+                    સક્રિય ચેતવણીઓ
                   </h2>
                 </div>
 
                 <p className="text-xs text-slate-500">
-                  {activeAlerts.length} active alert
+                  {activeAlerts.length} સક્રિય alert
                   {activeAlerts.length !== 1 ? "s" : ""}
                 </p>
               </div>
@@ -518,12 +507,11 @@ export default function Alerts() {
                   />
 
                   <p className="mt-4 text-sm font-bold text-slate-800">
-                    No active alerts
+                    કોઈ સક્રિય ચેતવણીઓ નથી
                   </p>
 
                   <p className="mt-2 text-xs text-slate-500">
-                    Your latest AI analyses do not indicate
-                    an asset requiring immediate attention.
+                    તમારા નવીનતમ AI વિશ્લેષણો સૂચવતા નથી કે કોઈ એસેટને તાત્કાલિક ધ્યાનની જરૂર છે.
                   </p>
                 </div>
               ) : (
@@ -538,7 +526,7 @@ export default function Alerts() {
               )}
             </section>
 
-            {/* Healthy / resolved */}
+            {/* સ્વસ્થ / resolved */}
             <section>
               <div className="mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
@@ -546,7 +534,7 @@ export default function Alerts() {
                 </p>
 
                 <h2 className="mt-1 text-xl font-bold text-slate-900">
-                  Healthy Assets
+                  સ્વસ્થ એસેટ્સ
                 </h2>
               </div>
 
@@ -558,12 +546,11 @@ export default function Alerts() {
                   />
 
                   <p className="mt-4 text-sm font-bold text-slate-800">
-                    No healthy analysis results yet
+                    હજુ સુધી કોઈ સ્વસ્થ વિશ્લેષણ પરિણામો નથી
                   </p>
 
                   <p className="mt-2 text-xs text-slate-500">
-                    Run an AI analysis to see the latest asset
-                    status here.
+                    નવીનતમ એસેટ સ્થિતિ જોવા માટે AI વિશ્લેષણ ચલાવો.
                   </p>
                 </div>
               ) : (
@@ -583,8 +570,7 @@ export default function Alerts() {
               <XCircle size={14} />
 
               <span>
-                Alerts are generated from real AI asset
-                analysis.
+                ચેતવણીઓ વાસ્તવિક AI એસેટ વિશ્લેષણમાંથી જનરેટ થાય છે.
               </span>
 
               <ChevronRight size={14} />

@@ -75,24 +75,30 @@ function Sidebar() {
   const technicianNavigationLinks = [
     {
       label: isGujarati ? "ડેશબોર્ડ" : "Dashboard",
-      path: "/technician",
+      path: isGujarati ? "/gu/technician" : "/technician",
       icon: LayoutDashboard,
     },
     {
       label: isGujarati ? "મેન્ટેનન્સ ટિપ્સ" : "Maintenance Tips",
-      path: "/technician/maintenance",
+      path: isGujarati
+        ? "/gu/technician/maintenance"
+        : "/technician/maintenance",
       icon: Wrench,
     },
     {
       label: isGujarati ? "સલામતી સાવચેતીઓ" : "Safety Precautions",
-      path: "/technician/safety",
+      path: isGujarati
+        ? "/gu/technician/safety"
+        : "/technician/safety",
       icon: ShieldCheck,
     },
     {
       label: isGujarati
         ? "સોલાર અને વિન્ડ માર્ગદર્શન"
         : "Solar & Wind Guidance",
-      path: "/technician/guidance",
+      path: isGujarati
+        ? "/gu/technician/guidance"
+        : "/technician/guidance",
       icon: BookOpen,
     },
   ];
@@ -134,7 +140,9 @@ function Sidebar() {
   const handleLogoClick = () => {
     navigate(
       isTechnician
-        ? "/technician"
+        ? isGujarati
+          ? "/gu/technician"
+          : "/technician"
         : isGujarati
           ? "/gu/dashboard"
           : "/dashboard"
