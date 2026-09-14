@@ -30,49 +30,49 @@ function Register() {
     setError("");
   };
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  if (
-    !form.fullName ||
-    !form.email ||
-    !form.phone ||
-    !form.password ||
-    !form.confirmPassword ||
-    !form.role
-  ) {
-    setError("Please complete all fields and select a role.");
-    return;
-  }
+    if (
+      !form.fullName ||
+      !form.email ||
+      !form.phone ||
+      !form.password ||
+      !form.confirmPassword ||
+      !form.role
+    ) {
+      setError("Please complete all fields and select a role.");
+      return;
+    }
 
-  if (form.password !== form.confirmPassword) {
-    setError("Passwords do not match.");
-    return;
-  }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-  if (form.password.length < 6) {
-    setError("Password must contain at least 6 characters.");
-    return;
-  }
+    if (form.password.length < 6) {
+      setError("Password must contain at least 6 characters.");
+      return;
+    }
 
-  try {
-    await apiRequest("/users/signup", {
-      method: "POST",
-      body: JSON.stringify({
-        username_email: form.email,
-        password: form.password,
-        full_name: form.fullName,
-        phone: form.phone,
-        role: form.role,
-      }),
-    });
+    try {
+      await apiRequest("/users/signup", {
+        method: "POST",
+        body: JSON.stringify({
+          username_email: form.email,
+          password: form.password,
+          full_name: form.fullName,
+          phone: form.phone,
+          role: form.role,
+        }),
+      });
 
-    navigate("/");
-  } catch (error) {
-    console.error(error);
-    setError("Unable to create account. Please try again.");
-  }
-};
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      setError("Unable to create account. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] lg:grid lg:grid-cols-[1.05fr_0.95fr]">
@@ -88,17 +88,17 @@ const handleSubmit = async (event) => {
 
         <div className="relative flex h-full flex-col justify-between p-12 text-white xl:p-16">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#001e61]">
-              <Leaf size={21} strokeWidth={1.8} />
-            </div>
+            <img
+              src="/renweai-logo.png"
+              alt="RenewAI"
+              className="h-10 w-10 object-contain"
+            />
 
             <div>
               <p className="text-[20px] font-bold tracking-[-0.04em]">
                 RenewAI
               </p>
-              <p className="mt-0.5 text-[9px] font-medium text-white/65">
-                Renewable Intelligence
-              </p>
+
             </div>
           </div>
 
@@ -130,14 +130,17 @@ const handleSubmit = async (event) => {
         <div className="w-full max-w-[470px]">
           <div className="mb-9 lg:hidden">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#001e61] text-white">
-                <Leaf size={21} strokeWidth={1.8} />
-              </div>
+              <img
+                src="/renweai-logo.png"
+                alt="RenewAI"
+                className="h-10 w-10 object-contain"
+              />
 
               <div>
                 <h1 className="text-[20px] font-bold tracking-[-0.04em] text-[#001e61]">
                   RenewAI
                 </h1>
+
                 <p className="mt-0.5 text-[9px] font-medium text-[#89968E]">
                   Renewable Intelligence
                 </p>
@@ -320,7 +323,9 @@ const handleSubmit = async (event) => {
                   type="button"
                   onClick={() => setShowPassword((current) => !current)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#89968E] transition hover:text-[#001e61]"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showPassword ? "Hide password" : "Show password"
+                  }
                 >
                   {showPassword ? (
                     <EyeOff size={17} strokeWidth={1.8} />

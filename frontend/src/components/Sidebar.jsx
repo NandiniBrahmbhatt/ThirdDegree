@@ -157,9 +157,11 @@ function Sidebar() {
           onClick={handleLogoClick}
           className="flex items-center gap-2"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#001e61] text-[12px] font-bold text-white">
-            R
-          </div>
+          <img
+            src="/renweai-logo.png"
+            alt="RenewAI"
+            className="h-9 w-9 object-contain"
+          />
 
           <span className="text-[18px] font-semibold tracking-[-0.03em] text-[#202722]">
             RenewAI

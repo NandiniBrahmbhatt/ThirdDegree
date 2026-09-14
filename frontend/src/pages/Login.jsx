@@ -33,40 +33,40 @@ function Login() {
     setError("");
   };
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  if (!form.email || !form.password) {
-    setError("Please enter your email and password.");
-    return;
-  }
+    if (!form.email || !form.password) {
+      setError("Please enter your email and password.");
+      return;
+    }
 
-  try {
-    const response = await apiRequest("/users/login", {
-      method: "POST",
-      body: JSON.stringify({
+    try {
+      const response = await apiRequest("/users/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username_email: form.email,
+          password: form.password,
+        }),
+      });
+
+      localStorage.setItem("renewai_token", response.access_token);
+
+      const user = {
         username_email: form.email,
-        password: form.password,
-      }),
-    });
+        role: response.role,
+      };
 
-    localStorage.setItem("renewai_token", response.access_token);
+      localStorage.setItem("renewai_user", JSON.stringify(user));
 
-    const user = {
-      username_email: form.email,
-      role: response.role,
-    };
-
-    localStorage.setItem("renewai_user", JSON.stringify(user));
-
-    navigate(
-      response.role === "technician" ? "/technician" : "/dashboard"
-    );
-  } catch (error) {
-    console.error(error);
-    setError("Invalid email or password.");
-  }
-};
+      navigate(
+        response.role === "technician" ? "/technician" : "/dashboard"
+      );
+    } catch (error) {
+      console.error(error);
+      setError("Invalid email or password.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FAFBF7] text-[#202722]">
@@ -78,9 +78,11 @@ const handleSubmit = async (event) => {
               to="/"
               className="inline-flex items-center gap-2 text-white"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-                <span className="text-sm font-bold">R</span>
-              </div>
+              <img
+                src="/renweai-logo.png"
+                alt="RenewAI"
+                className="h-10 w-10 object-contain"
+              />
 
               <span className="text-xl font-semibold tracking-[-0.04em]">
                 RenewAI
@@ -122,9 +124,11 @@ const handleSubmit = async (event) => {
               to="/"
               className="mb-12 flex items-center gap-2 lg:hidden"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#001e61] text-white">
-                <span className="text-xs font-bold">R</span>
-              </div>
+              <img
+                src="/renweai-logo.png"
+                alt="RenewAI"
+                className="h-9 w-9 object-contain"
+              />
 
               <span className="text-lg font-semibold tracking-[-0.04em] text-[#202722]">
                 RenewAI

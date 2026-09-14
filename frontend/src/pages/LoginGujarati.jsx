@@ -75,12 +75,14 @@ function LoginGujarati() {
         <section className="relative hidden overflow-hidden bg-[#001e61] lg:flex lg:flex-col lg:justify-between p-10 xl:p-14">
           <div>
             <Link
-              to="/gu/login"
+              to="/"
               className="inline-flex items-center gap-2 text-white"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
-                <span className="text-sm font-bold">R</span>
-              </div>
+              <img
+                src="/renweai-logo.png"
+                alt="RenewAI"
+                className="h-10 w-10 object-contain"
+              />
 
               <span className="text-xl font-semibold tracking-[-0.04em]">
                 RenewAI

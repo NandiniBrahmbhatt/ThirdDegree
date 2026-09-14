@@ -128,13 +128,14 @@ function App() {
           AUTHENTICATION
       ====================================================== */}
 
+      {/* 
+          IMPORTANT:
+          The root URL ALWAYS opens the Login page.
+          It does NOT redirect based on localStorage.
+      */}
       <Route
         path="/"
-        element={
-          <AccountRoute>
-            <Login />
-          </AccountRoute>
-        }
+        element={<Login />}
       />
 
       <Route
